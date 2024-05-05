@@ -1,0 +1,17 @@
+# Compose v2.20.3+
+
+## Quick port mapping reference.
+# dnsmasq_svc - host networking on port 0.0.0.0:53
+# caddy_svc - host networking on ports 0.0.0.0:80, 0.0.0.0:443, 127.0.0.1:2019
+# vaultwarden_svc - 127.0.0.1:1080:80, 127.0.0.1:3012:3012
+# gitea_svc - 127.0.0.1:1180:3000, 22:22
+
+include:
+  # Primary Baseline Services
+  - services/critical_pkg_svc.yml
+  - services/dnsmasq_svc.yml
+  - services/caddy_certs_init.yml
+  - services/caddy_svc.yml
+  - services/vaultwarden_svc.yml
+  - services/gitea_svc.yml
+  - services/gitea_sys_runner.yml

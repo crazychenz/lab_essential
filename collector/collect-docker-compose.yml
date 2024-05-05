@@ -1,0 +1,79 @@
+services:
+  debian-collector:
+    image: debian:12-slim
+    privileged: true
+    volumes:
+      - ${PWD}/data:/data
+    working_dir: /data
+    entrypoint: ["/bin/sh","-c"]
+    environment:
+    - PACKAGES=docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    - DOCKER_ASC=/etc/apt/keyrings/docker.asc
+    - DOCKER_URL=https://download.docker.com/linux/debian
+    command:
+    - |
+      # Install docker debian package repo
+      apt-get update
+      # Note: dpkg-dev brings in oodles of extra deps.
+      apt-get install -y ca-certificates curl apt-rdepends dpkg-dev
+      install -m 0755 -d /etc/apt/keyrings
+      curl -fsSL https://download.docker.com/linux/debian/gpg \
+        -o /etc/apt/keyrings/docker.asc
+      chmod a+r /etc/apt/keyrings/docker.asc
+      
+      echo \
+        "deb [arch=$$(dpkg --print-architecture) signed-by=$$DOCKER_ASC] $$DOCKER_URL \
+        $$(. /etc/os-release && echo "$$VERSION_CODENAME") stable" | \
+        tee /etc/apt/sources.list.d/docker.list > /dev/null
+      apt-get update
+
+      # Download packages dependencies
+      install -m 0777 -d /data/debian
+      cd /data/debian
+      apt-get updates
+      apt-get download $$(apt-rdepends $$PACKAGES|grep -v "^ "|grep -v "^debconf-2.0$$")
+      dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+      rm -f /data/debian/.apt-acquire-privs-test*
+
+  alpine-collector:
+    image: alpine:latest
+    privileged: true
+    volumes:
+      - ${PWD}/data:/data
+    working_dir: /data
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+      install -m 0777 -d /data/alpine/x86_64
+      cd /data/alpine/x86_64
+      apk update
+      apk fetch -R dnsmasq
+      apk index --rewrite-arch x86_64 -o APKINDEX.tar.gz *.apk
+  
+  docker-collector:
+    image: alpine:latest
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PWD}/data:/data
+    working_dir: /data
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+      install -m 0777 -d /data/docker
+      cd /data/docker
+      apk add -U docker
+      docker pull alpine:latest
+      docker save -o alpine_-_latest.dockerimage alpine:latest
+      docker pull caddy:alpine
+      docker save -o caddy_-_alpine.dockerimage caddy:alpine
+      docker pull gitea/gitea:latest
+      docker save -o gitea_-_gitea_-_latest.dockerimage gitea/gitea:latest
+      docker pull gitea/act_runner:latest
+      docker save -o gitea_-_act_runner_-_latest.dockerimage gitea/act_runner:latest
+      docker pull vaultwarden/server:latest
+      docker save -o vaultwarden_-_server_-_latest.dockerimage vaultwarden/server:latest
+      docker pull node:lts-alpine
+      docker save -o node_-_lts-alpine.dockerimage node:lts-alpine
+      
+ 

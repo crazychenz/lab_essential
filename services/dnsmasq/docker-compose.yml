@@ -1,0 +1,25 @@
+services:
+  dnsmasq_svc:
+    image: git.lab/lab/dnsmasq:initial
+    depends_on: [ critical_pkg_svc ]
+    container_name: dnsmasq_svc
+    build:
+      dockerfile_inline: |
+        FROM alpine:latest
+        RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
+        RUN apk add -U --allow-untrusted dnsmasq
+      extra_hosts: [ "dockerhost:host-gateway" ]
+    restart: unless-stopped
+    network_mode: host
+    dns:
+    - 9.9.9.9
+    - 1.1.1.1
+    dns_search: lab
+    extra_hosts:
+    - dockerhost:host-gateway
+    - git.lab:192.168.1.217
+    - words.lab:192.168.1.217
+    - dns.lab:192.168.1.217
+    - www.lab:192.168.1.217
+    - tls.lab:192.168.1.217
+    entrypoint: ["/usr/sbin/dnsmasq", "--no-daemon"]
