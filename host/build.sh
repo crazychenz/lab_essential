@@ -1,5 +1,8 @@
 #!/bin/sh
 
+install -m 0777 -d /opt/state/essential/
+tar -C /opt/state/essential -xf critical_pkgs.tar
+
 # Disable upstream repos if we're offline
 grep "debian.org" /etc/apt/sources.list >/dev/null
 if [ $? -eq 0 ]; then

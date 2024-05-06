@@ -1,10 +1,10 @@
 services:
-  caddy_svc:
+  caddy_router_svc:
     image: git.lab/lab/caddy:initial
     depends_on:
       caddy_certs_init: { condition: service_completed_successfully }
       dnsmasq_svc: { condition: service_started }
-    container_name: caddy_svc
+    container_name: caddy_router_svc
     build: 
       context: context
       dockerfile_inline: |
