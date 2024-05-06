@@ -51,4 +51,17 @@ echo "192.168.1.217 git.lab" >> /etc/hosts
 git clone git@git.lab:lab/essential.git
 cd essential/collector
 sudo ./install-docker.sh
-sudo ./collect.sh
+sudo ./collect-critical_pkgs.sh
+```
+
+```
+cd host
+sudo ./build.sh
+```
+
+```
+cd services
+docker compose up -d critical_pkgs_svc
+docker compose build
+docker compose up -d
+```
