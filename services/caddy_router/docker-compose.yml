@@ -10,22 +10,13 @@ services:
       dockerfile_inline: |
         FROM caddy:alpine
         
-        RUN mkdir -p /etc/caddy/caddyfile.d
-        RUN echo "import /etc/caddy/caddyfile.d/*/Caddyfile" > /etc/caddy/Caddyfile
-
+        COPY Caddyfile /etc/caddy/Caddyfile
+        
         # Build the container entrypoint
         COPY <<EOF /start-caddy.sh
         #!/bin/sh
         mkdir -p /public/certs
         cp /data/caddy/pki/authorities/local/*.crt /public/certs
-        
-        mkdir /etc/caddy/caddyfile.d/tls.lab
-        echo "https://tls.lab {" > /etc/caddy/caddyfile.d/tls.lab/Caddyfile
-        echo "  tls internal" >> /etc/caddy/caddyfile.d/tls.lab/Caddyfile
-        echo "  root * /public" >> /etc/caddy/caddyfile.d/tls.lab/Caddyfile
-        echo "  file_server browse" >> /etc/caddy/caddyfile.d/tls.lab/Caddyfile
-        echo "}" >> /etc/caddy/caddyfile.d/tls.lab/Caddyfile
-
         caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
         EOF
         RUN chmod +x /start-caddy.sh
@@ -34,6 +25,5 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - /opt/state/caddy_router_svc/caddyfile.d:/etc/caddy/caddyfile.d
       - /opt/state/caddy_router_svc/config:/config
       - /opt/state/caddy_certs_init:/data/caddy/pki/authorities/local
