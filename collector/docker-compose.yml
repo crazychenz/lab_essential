@@ -75,5 +75,6 @@ services:
       docker save -o vaultwarden_-_server_-_latest.dockerimage vaultwarden/server:latest
       docker pull node:lts-alpine
       docker save -o node_-_lts-alpine.dockerimage node:lts-alpine
+      chmod 755 /data/docker/*
       
  
