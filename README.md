@@ -13,3 +13,38 @@ Essential services are the bare minimum services needed to support all other Git
   - Caddy - CA & HTTPS Server
   - Gitea - Git Server
 
+## Install
+
+1. Login to the host
+2. Install `git`
+3. `git clone `
+4. Install docker with `host/install-docker.sh`
+
+
+
+
+## Notes
+
+Reasonable defaults for Debian 12 install. No Desktop Environment. Included SSH server and standard system utilities.
+
+- Install sudo and git
+
+```
+su
+apt-get update
+apt-get install -y sudo git
+/sbin/adduser cicd sudo
+```
+
+- Set SSH to port 2222
+
+```
+su
+echo "Port 2222" > /etc/ssh/sshd_config.d/port2222.conf
+systemctl restart sshd
+```
+
+- Collect critical packages
+
+```
+git clone git@git.lab:lab/essential.git

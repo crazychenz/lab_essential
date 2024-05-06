@@ -7,8 +7,8 @@ if [ $? -eq 0 ]; then
 fi
 
 # Create an offline repository
-echo "deb [trusted=yes] file:/opt/offline/data/debian ./" \
-  > /etc/apt/sources.list.d/offline.list
+echo "deb [trusted=yes] file:/opt/state/essential/critical_pkgs/debian ./" \
+  > /etc/apt/sources.list.d/critical_pkgs.list
 apt-get update
 # Install relevant packages from the offline repo
 apt-get install -y docker-ce docker-ce-cli containerd.io \
@@ -18,14 +18,14 @@ apt-get install -y docker-ce docker-ce-cli containerd.io \
 #/sbin/adduser $USER docker
 
 # Import all of the docker images
-docker load < ./data/docker/alpine_-_latest.dockerimage
-docker load < ./data/docker/caddy_-_alpine.dockerimage
-docker load < ./data/docker/gitea_-_gitea_-_latest.dockerimage
-docker load < ./data/docker/gitea_-_act_runner_-_latest.dockerimage
-docker load < ./data/docker/vaultwarden_-_server_-_latest.dockerimage
-docker load < ./data/docker/node_-_lts-alpine.dockerimage
+docker load < /opt/state/essential/critical_pkgs/docker/alpine_-_latest.dockerimage
+docker load < /opt/state/essential/critical_pkgs/docker/caddy_-_alpine.dockerimage
+docker load < /opt/state/essential/critical_pkgs/docker/gitea_-_gitea_-_latest.dockerimage
+docker load < /opt/state/essential/critical_pkgs/docker/gitea_-_act_runner_-_latest.dockerimage
+docker load < /opt/state/essential/critical_pkgs/docker/vaultwarden_-_server_-_latest.dockerimage
+docker load < /opt/state/essential/critical_pkgs/docker/node_-_lts-alpine.dockerimage
 
-docker compose -f build-docker-compose.yml up dnsmasq_svc
+#docker compose -f build-docker-compose.yml up dnsmasq_svc
 
 # python3 -m http.server -b 0.0.0.0 8000 &
 # PHTHON3_HTTPD_PID=$!
