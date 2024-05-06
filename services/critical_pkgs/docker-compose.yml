@@ -1,8 +1,8 @@
 services:
-  critical_pkg_svc:
+  critical_pkgs_svc:
     image: caddy:alpine
     volumes:
-      - /opt/state/critical_pkg_svc/data:/data
+      - /opt/state/essential/critical_pkgs:/data
       #- ${PWD}/data:/data
     working_dir: /data
     ports: [ "8000:80" ]

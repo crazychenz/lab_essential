@@ -1,7 +1,7 @@
 services:
   dnsmasq_svc:
     image: git.lab/lab/dnsmasq:initial
-    depends_on: [ critical_pkg_svc ]
+    depends_on: [ critical_pkgs_svc ]
     container_name: dnsmasq_svc
     build:
       dockerfile_inline: |
