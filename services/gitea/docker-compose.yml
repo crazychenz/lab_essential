@@ -1,6 +1,6 @@
 services:
   gitea_svc:
-    image: gitea/gitea:1.21.4
+    image: gitea/gitea:1.22.0-rc1
     depends_on: [dnsmasq_svc, caddy_router_svc]
     container_name: gitea_svc
     environment:

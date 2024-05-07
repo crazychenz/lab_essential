@@ -69,3 +69,4 @@ docker compose up -d
 ```
 
 TODO: Handle DHCP and resolv.conf
+TODO: Handle different IP in dnsmasq
