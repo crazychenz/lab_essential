@@ -3,7 +3,7 @@ services:
     image: caddy:alpine
     container_name: critical_pkgs_svc
     volumes:
-      - /opt/state/essential/critical_pkgs:/data
+      - /opt/imports/essential/critical_pkgs:/data
       #- ${PWD}/data:/data
     working_dir: /data
     ports: [ "8000:80" ]

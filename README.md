@@ -47,8 +47,11 @@ systemctl restart sshd
 - Collect critical packages
 
 ```
-echo "192.168.1.217 git.lab" >> /etc/hosts
-git clone git@git.lab:lab/essential.git
+#echo "192.168.1.178 git.lab" >> /etc/hosts
+mkdir -p /opt/managedcfg
+chown cicd /opt/managedcfg
+cd /opt/managedcfg
+git clone git@github.com:crazychenz/lab_essential.git essential
 cd essential/collector
 sudo ./install-docker.sh
 sudo ./collect-critical_pkgs.sh
