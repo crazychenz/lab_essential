@@ -25,6 +25,10 @@ spec:
         - name: certs-path
           mountPath: /certs
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      dnsConfig:
+        nameservers: [ "192.168.1.77" ]
+        searches: [ "lab" ]
       containers:
       - name: caddy
         image: git.lab/lab/caddy:initial
