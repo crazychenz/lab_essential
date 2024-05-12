@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:1.22.0-rc1
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        - name: timezone-volume
+          mountPath: /etc/timezone
+        - name: localtime-volume
+          mountPath: /etc/localtime
+      volumes:
+      - name: data-volume
+        hostPath: { path: /opt/state/gitea_svc/data }
+      - name: timezone-volume
+        hostPath: { path: /etc/timezone }
+      - name: localtime-volume
+        hostPath: { path: /etc/localtime }
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+
+      - /opt/state/gitea_svc/data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports: [ 127.0.0.1:1180:3000, "22:22" ]

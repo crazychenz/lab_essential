@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsmasq-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dnsmasq
+  template:
+    metadata:
+      labels:
+        app: dnsmasq
+    spec:
+      containers:
+      - name: dnsmasq
+        image: git.lab/lab/dnsmasq:initial
+        imagePullPolicy: IfNotPresent
+        #volumeMounts:
+        #- name: data-volume
+        #  mountPath: /data
+        command: ["/usr/sbin/dnsmasq", "--no-daemon"]
+      #volumes:
+      #- name: data-volume
+      #  hostPath:
+      #    path: /opt/state/dnsmasq-deployment/data
+      dnsConfig:
+        nameservers: [ "9.9.9.9", "1.1.1.1" ]
+        searches: [ "lab" ]
+      extraHosts:
+      # dockerhost => host.docker.internal
+      - ip: "192.168.1.77"
+        hostnames:
+        - "git.lab"
+        - "words.lab"
+        - "dns.lab"
+        - "www.lab"
+        - "tls.lab"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq-service
+spec:
+  selector:
+    app: dnsmasq
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 53
+    targetPort: 53
+    # Recommended range: 30000-32767
+    nodePort: 53

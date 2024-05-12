@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy_router-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: caddy_router
+  template:
+    metadata:
+      labels:
+        app: caddy_router
+    spec:
+      initContainers:
+      #- name: wait-for-dnsmasq
+      #  image: busybox:1.32
+      #  command: ['sh', '-c', 'until nslookup dnsmasq.default.svc.cluster.local; do echo waiting for dnsmasq; sleep 2; done;']
+      #- name: wait-for-caddy_certs_init
+      #  image: busybox:1.32
+      #  command: ['sh', '-c', 'until nc -z caddy_certs_init 443; do echo waiting for caddy_certs_init; sleep 2; done;']
+      - name: caddy_certs_init
+        image: git.lab/lab/caddy:certs_init
+        volumeMounts:
+        - name: certs-path
+          mountPath: /certs
+      containers:
+      - name: caddy
+        image: git.lab/lab/caddy:latest
+        volumeMounts:
+        - name: caddy-config-path
+          mountPath: /config
+        - name: certs-path
+          mountPath: /data/caddy/pki/authorities/local
+      volumes:
+      - name: certs-path
+        hostPath: { path: /opt/state/caddy_certs_init/certs }
+      - name: caddy-config-path
+        hostPath: { path: /opt/state/caddy_router_svc/config }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
