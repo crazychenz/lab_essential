@@ -12,6 +12,10 @@ spec:
       labels:
         app: gitea
     spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      dnsConfig:
+        nameservers: [ "192.168.1.77" ]
+        searches: [ "lab" ]
       hostNetwork: true
       containers:
       - name: gitea
