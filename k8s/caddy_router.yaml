@@ -59,7 +59,7 @@ metadata:
   name: caddy-router-service
 spec:
   selector:
-    app: gitea
+    app: caddy_router
   type: LoadBalancer
   ports:
   - name: http-80
