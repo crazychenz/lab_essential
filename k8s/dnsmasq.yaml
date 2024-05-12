@@ -13,14 +13,14 @@ spec:
       labels:
         app: dnsmasq
     spec:
-      hostNetwork: true
+      #hostNetwork: true
       containers:
       - name: dnsmasq
         image: git.lab/lab/dnsmasq:initial
         imagePullPolicy: IfNotPresent
-        ports:
-        - { name: dns-tcp, containerPort: 53, protocol: TCP }
-        - { name: dns-udp, containerPort: 53, protocol: UDP }
+        #ports:
+        #- { name: dns-tcp, containerPort: 53, protocol: TCP }
+        #- { name: dns-udp, containerPort: 53, protocol: UDP }
         #volumeMounts:
         #- name: data-volume
         #  mountPath: /data
@@ -30,7 +30,7 @@ spec:
       #  hostPath:
       #    path: /opt/state/dnsmasq-deployment/data
       # See https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
-      dnsPolicy: ClusterFirstWithHostNet
+      #dnsPolicy: ClusterFirstWithHostNet
       dnsConfig:
         nameservers: [ "9.9.9.9", "1.1.1.1" ]
         searches: [ "lab" ]
@@ -49,3 +49,22 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
 
+---
+# Handled by ServiceLB (i.e. Klipper) in K3s
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq-service
+spec:
+  selector:
+    app: dnsmasq
+  type: LoadBalancer
+  ports:
+  - name: dns-tcp
+    protocol: TCP
+    port: 53
+    targetPort: 53
+  - name: dns-udp
+    protocol: UDP
+    port: 53
+    targetPort: 53
