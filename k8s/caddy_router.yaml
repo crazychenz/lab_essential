@@ -24,17 +24,12 @@ spec:
         volumeMounts:
         - name: certs-path
           mountPath: /certs
-      #hostNetwork: true
-      #dnsPolicy: ClusterFirstWithHostNet
       #dnsConfig:
       #  nameservers: [ "192.168.1.77" ]
       #  searches: [ "lab" ]
       containers:
       - name: caddy
         image: git.lab/lab/caddy:initial
-        #ports:
-        #- { name: http, containerPort: 80, protocol: TCP }
-        #- { name: https, containerPort: 443, protocol: TCP }
         volumeMounts:
         - name: caddy-config-path
           mountPath: /config
@@ -62,15 +57,11 @@ spec:
     app: caddy_router
   type: LoadBalancer
   ports:
-  - name: http-80
+  - name: caddy-http
     protocol: TCP
     port: 80
     targetPort: 80
-  - name: http-81
-    protocol: TCP
-    port: 81
-    targetPort: 81
-  - name: https-443
+  - name: caddy-https
     protocol: TCP
     port: 443
     targetPort: 443
