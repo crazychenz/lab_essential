@@ -24,9 +24,13 @@ spec:
         volumeMounts:
         - name: certs-path
           mountPath: /certs
+      hostNetwork: true
       containers:
       - name: caddy
         image: git.lab/lab/caddy:latest
+        ports:
+        - { name: http, containerPort: 80, protocol: TCP }
+        - { name: https, containerPort: 443, protocol: TCP }
         volumeMounts:
         - name: caddy-config-path
           mountPath: /config
