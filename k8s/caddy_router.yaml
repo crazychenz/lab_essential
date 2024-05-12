@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: caddy_router-deployment
+  name: caddy-router-deployment
 spec:
   replicas: 1
   selector:
@@ -19,7 +19,7 @@ spec:
       #- name: wait-for-caddy_certs_init
       #  image: busybox:1.32
       #  command: ['sh', '-c', 'until nc -z caddy_certs_init 443; do echo waiting for caddy_certs_init; sleep 2; done;']
-      - name: caddy_certs_init
+      - name: caddy-certs-init
         image: git.lab/lab/caddy:certs_init
         volumeMounts:
         - name: certs-path
@@ -27,7 +27,7 @@ spec:
       hostNetwork: true
       containers:
       - name: caddy
-        image: git.lab/lab/caddy:latest
+        image: git.lab/lab/caddy:initial
         ports:
         - { name: http, containerPort: 80, protocol: TCP }
         - { name: https, containerPort: 443, protocol: TCP }
