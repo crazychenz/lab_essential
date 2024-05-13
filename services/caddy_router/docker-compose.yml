@@ -1,9 +1,9 @@
 services:
   caddy_router_svc:
     image: git.lab/lab/caddy:initial
-    depends_on:
-      caddy_certs_init: { condition: service_completed_successfully }
-      dnsmasq_svc: { condition: service_started }
+    #depends_on:
+    #  caddy_certs_init: { condition: service_completed_successfully }
+    #  dnsmasq_svc: { condition: service_started }
     container_name: caddy_router_svc
     build: 
       context: context
@@ -23,7 +23,13 @@ services:
         CMD ["/start-caddy.sh"]
 
     restart: unless-stopped
-    network_mode: host
+    #network_mode: host
+    ports: [ "11180:80", "11443:443", "81:81" ]
+
+    extra_hosts:
+    # Backend hostnames used in Caddyfile
+    - dockerhost:host-gateway
+    - gitea-service:192.168.1.178
     volumes:
       - /opt/state/caddy_router_svc/config:/config
       - /opt/state/caddy_certs_init:/data/caddy/pki/authorities/local

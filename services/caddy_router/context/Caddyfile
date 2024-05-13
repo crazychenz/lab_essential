@@ -1,7 +1,7 @@
 https://words.lab {
   tls internal
   
-  reverse_proxy http://127.0.0.1:1080 {
+  reverse_proxy http://127.0.0.1:31080 {
     header_up Host {host}
     header_up X-Real-IP {remote}
   }
@@ -10,7 +10,8 @@ https://words.lab {
 https://git.lab {
   tls internal
   
-  reverse_proxy http://127.0.0.1:1180 {
+  # gitea-service from extra_hosts OR ClusterIP
+  reverse_proxy http://gitea-service:1180 {
     header_up Host {host}
     header_up X-Real-IP {remote}
   }
@@ -19,7 +20,7 @@ https://git.lab {
 https://www.lab {
   tls internal
   
-  reverse_proxy http://127.0.0.1:1280 {
+  reverse_proxy http://127.0.0.1:31280 {
     header_up Host {host}
     header_up X-Real-IP {remote}
   }
@@ -28,6 +29,16 @@ https://www.lab {
 https://tls.lab {
   tls internal
   
+  root * /public
+  file_server browse
+}
+
+http://tls.lab {
+  root * /public
+  file_server browse
+}
+
+http://tls.lab:81 {
   root * /public
   file_server browse
 }

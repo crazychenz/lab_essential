@@ -70,3 +70,4 @@ docker compose up -d
 
 TODO: Handle DHCP and resolv.conf
 TODO: Handle different IP in dnsmasq
+curl https://git.lab/api/v1/admin/runners/registration-token?token=TOKEN

@@ -3,7 +3,7 @@ services:
     image: debian:12-slim
     privileged: true
     volumes:
-      - ${PWD}/critical_pkgs:/data
+      - ${PWD}/essential_pkgs:/data
     working_dir: /data
     entrypoint: ["/bin/sh","-c"]
     environment:
@@ -39,7 +39,7 @@ services:
     image: alpine:latest
     privileged: true
     volumes:
-      - ${PWD}/critical_pkgs:/data
+      - ${PWD}/essential_pkgs:/data
     working_dir: /data
     entrypoint: ["/bin/sh","-c"]
     command:
@@ -55,7 +55,7 @@ services:
     privileged: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${PWD}/critical_pkgs:/data
+      - ${PWD}/essential_pkgs:/data
     working_dir: /data
     entrypoint: ["/bin/sh","-c"]
     command:
@@ -77,4 +77,34 @@ services:
       docker save -o node_-_lts-alpine.dockerimage node:lts-alpine
       chmod 755 /data/docker/*
       
- 
+  github-collector:
+    image: alpine:latest
+    privileged: true
+    volumes:
+      - ${PWD}/essential_pkgs:/data
+    working_dir: /data
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+      install -m 0777 -d /data/github/k3s-io
+      cd /data/github/k3s-io
+      apk -U add curl
+      # https://github.com/k3s-io/k3s/releases
+      curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s
+      curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s-airgap-images-amd64.tar.gz
+      chmod +x k3s
+      cat >install_k3s.sh <<EOF
+      #!/bin/sh
+      LAN_LISTEN_IFACE=\$(ip r s | grep ^default | cut -d ' ' -f5)
+      LAN_LISTEN_ADDR=\$(ip addr show \$LAN_LISTEN_IFACE | grep "inet\b" | awk '{print \$2}' | cut -d/ -f1)
+      INSTALL_K3S_SKIP_DOWNLOAD=true
+      INSTALL_K3S_EXEC="--write-kubeconfig-mode 660"
+      INSTALL_K3S_EXEC="\$INSTALL_K3S_EXEC --disable traefik"
+      INSTALL_K3S_EXEC="\$INSTALL_K3S_EXEC --node-ip \$LAN_LISTEN_ADDR "
+      INSTALL_K3S_EXEC="\$INSTALL_K3S_EXEC --node-external-ip \$LAN_LISTEN_ADDR "
+      INSTALL_K3S_EXEC="\$INSTALL_K3S_EXEC --advertise-address \$LAN_LISTEN_ADDR "
+      INSTALL_K3S_EXEC="\$INSTALL_K3S_EXEC --bind-address \$LAN_LISTEN_ADDR"
+      echo ""
+      EOF
+      curl https://get.k3s.io >> install_k3s.sh
+      chmod +x install_k3s.sh

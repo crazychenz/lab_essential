@@ -11,4 +11,4 @@ services:
       - /opt/state/gitea_svc/data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    ports: [ 127.0.0.1:1180:3000, "22:22" ]
+    ports: [ 127.0.0.1:31180:3000, "22:22" ]
