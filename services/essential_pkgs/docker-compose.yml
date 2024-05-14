@@ -1,0 +1,10 @@
+services:
+  essential_pkgs_svc:
+    image: caddy:alpine
+    container_name: essential_pkgs_svc
+    volumes:
+      - /opt/imports/essential_pkgs:/essential_pkgs
+      #- ${PWD}/data:/data
+    working_dir: /data
+    ports: [ "8000:80" ]
+    entrypoint: caddy file-server --root /essential_pkgs --browse

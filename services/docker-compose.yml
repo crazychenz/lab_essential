@@ -7,7 +7,7 @@
 
 include:
   # Primary Baseline Services
-  - critical_pkgs/docker-compose.yml
+  - essential_pkgs/docker-compose.yml
   - dnsmasq/docker-compose.yml
   - caddy_certs_init/docker-compose.yml
   - caddy_router/docker-compose.yml

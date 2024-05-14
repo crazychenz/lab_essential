@@ -1,10 +1,10 @@
 services:
   dnsmasq_svc:
     image: git.lab/lab/dnsmasq:initial
-    depends_on: [ critical_pkgs_svc ]
     container_name: dnsmasq_svc
     build:
       dockerfile_inline: |
+        # Build depends on essential_pkgs_svc
         FROM alpine:latest
         RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
         RUN apk add -U --allow-untrusted dnsmasq
