@@ -5,7 +5,7 @@ mkdir -p essential_pkgs/debian
 mkdir -p essential_pkgs/docker
 mkdir -p essential_pkgs/github
 
-#docker compose up
+docker compose up
 
 git bundle create essential_pkgs/lab_essential.bundle --all
 
