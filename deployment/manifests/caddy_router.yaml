@@ -25,7 +25,7 @@ spec:
         - name: certs-path
           mountPath: /certs
       #dnsConfig:
-      #  nameservers: [ "192.168.1.77" ]
+      #  nameservers: [ "192.168.1.5" ]
       #  searches: [ "lab" ]
       containers:
       - name: caddy

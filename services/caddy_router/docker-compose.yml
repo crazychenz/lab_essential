@@ -29,7 +29,7 @@ services:
     extra_hosts:
     # Backend hostnames used in Caddyfile
     - dockerhost:host-gateway
-    - gitea-service:192.168.1.77
+    - gitea-service:192.168.1.5
     volumes:
       - /opt/state/caddy_router_svc/config:/config
       - /opt/state/caddy_certs_init:/data/caddy/pki/authorities/local

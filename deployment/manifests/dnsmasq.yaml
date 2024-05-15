@@ -13,30 +13,19 @@ spec:
       labels:
         app: dnsmasq
     spec:
-      #hostNetwork: true
       containers:
       - name: dnsmasq
         image: git.lab/lab/dnsmasq:initial
         imagePullPolicy: IfNotPresent
-        #ports:
-        #- { name: dns-tcp, containerPort: 53, protocol: TCP }
-        #- { name: dns-udp, containerPort: 53, protocol: UDP }
-        #volumeMounts:
-        #- name: data-volume
-        #  mountPath: /data
-        command: ["/usr/sbin/dnsmasq", "--no-daemon"]
-      #volumes:
-      #- name: data-volume
-      #  hostPath:
-      #    path: /opt/state/dnsmasq-deployment/data
-      # See https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
-      #dnsPolicy: ClusterFirstWithHostNet
+        # Note: --interface=eth0 implicitly overrides local-service
+        #       local-service prevents dnsmasq from serving routed traffic
+        command: ["/usr/sbin/dnsmasq", "--no-daemon", "--interface=eth0"]
       dnsConfig:
         nameservers: [ "9.9.9.9", "1.1.1.1" ]
         searches: [ "lab" ]
       hostAliases:
       # dockerhost => host.docker.internal
-      - ip: "192.168.1.77"
+      - ip: "192.168.1.5"
         hostnames:
         - "git.lab"
         - "words.lab"
