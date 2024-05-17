@@ -17,7 +17,7 @@ spec:
       - name: dnsmasq
         image: git.lab/lab/dnsmasq:initial
         imagePullPolicy: IfNotPresent
-        # Note: --interface=eth0 implicitly overrides local-service
+        # Note: --interface=eth0 implicitly overrides local-service and
         #       local-service prevents dnsmasq from serving routed traffic
         command: ["/usr/sbin/dnsmasq", "--no-daemon", "--interface=eth0"]
       dnsConfig:

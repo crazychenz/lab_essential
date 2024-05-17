@@ -75,6 +75,34 @@ services:
       docker save -o vaultwarden_-_server_-_latest.dockerimage vaultwarden/server:latest
       docker pull node:lts-alpine
       docker save -o node_-_lts-alpine.dockerimage node:lts-alpine
+
+      docker rmi alpine:latest
+      docker rmi caddy:alpine
+      docker rmi gitea/gitea:latest
+      docker rmi gitea/act_runner:latest
+      docker rmi vaultwarden/server:latest
+      docker rmi node:lts-alpine
+      
+      docker pull ghcr.io/fluxcd/notification-controller
+      docker save -o ghcr.io_-_fluxcd_-_notification-controller.dockerimage ghcr.io/fluxcd/notification-controller
+      docker pull ghcr.io/fluxcd/kustomize-controller
+      docker save -o ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage ghcr.io/fluxcd/kustomize-controller
+      docker pull ghcr.io/fluxcd/helm-controller
+      docker save -o ghcr.io_-_fluxcd_-_helm-controller.dockerimage ghcr.io/fluxcd/helm-controller
+      docker pull ghcr.io/fluxcd/source-controller
+      docker save -o ghcr.io_-_fluxcd_-_source-controller.dockerimage ghcr.io/fluxcd/source-controller
+      docker pull ghcr.io/fluxcd/image-automation-controller
+      docker save -o ghcr.io_-_fluxcd_-_image-automation-controller.dockerimage ghcr.io/fluxcd/image-automation-controller
+      docker pull ghcr.io/fluxcd/image-reflector-controller
+      docker save -o ghcr.io_-_fluxcd_-_image-reflector-controller.dockerimage ghcr.io/fluxcd/image-reflector-controller
+
+      docker rmi ghcr.io/fluxcd/notification-controller
+      docker rmi ghcr.io/fluxcd/kustomize-controller
+      docker rmi ghcr.io/fluxcd/helm-controller
+      docker rmi ghcr.io/fluxcd/source-controller
+      docker rmi ghcr.io/fluxcd/image-automation-controller
+      docker rmi ghcr.io/fluxcd/image-reflector-controller
+
       chmod 755 /data/docker/*
       
   github-collector:
@@ -86,10 +114,21 @@ services:
     entrypoint: ["/bin/sh","-c"]
     command:
     - |
+      apk -U add curl
+
+      # https://github.com/corneliusweig/ketall/releases
+      install -m 0777 -d /data/github/ketall
+      cd /data/github/ketall
+      curl -LO https://github.com/corneliusweig/ketall/releases/download/v1.3.8/get-all-amd64-linux.tar.gz
+
+      # https://github.com/fluxcd/flux2/releases
+      install -m 0777 -d /data/github/fluxcd
+      cd /data/github/fluxcd
+      curl -LO https://github.com/fluxcd/flux2/releases/download/v2.3.0/flux_2.3.0_linux_amd64.tar.gz
+
+      # https://github.com/k3s-io/k3s/releases
       install -m 0777 -d /data/github/k3s-io
       cd /data/github/k3s-io
-      apk -U add curl
-      # https://github.com/k3s-io/k3s/releases
       curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s
       curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s-airgap-images-amd64.tar.gz
       chmod +x k3s
