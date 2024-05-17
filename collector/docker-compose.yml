@@ -48,6 +48,9 @@ services:
       cd /data/alpine/x86_64
       apk update
       apk fetch -R dnsmasq
+      apk fetch -R ansible
+      apk fetch -R docker
+      apk fetch -R nodejs
       apk index --rewrite-arch x86_64 -o APKINDEX.tar.gz *.apk
   
   docker-collector:

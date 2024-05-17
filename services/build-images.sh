@@ -24,42 +24,36 @@ docker save -o ${DOCKER_IMG_DIR}git.lab_-_lab_-_caddy_-_initial.dockerimage git.
 docker compose down
 
 
-#  --exclude ./essential_pkgs/alpine \
-#  --exclude ./essential_pkgs/debian \
+## This is the obsolete essential script generation. We now only use
+## the new essential script (previously critical_pkgs script) and build
+## upon that for simplicity.
+# #TARFLAG="-J" # xz compression
+# TARFLAG="" # no compression
+# cd /opt/imports
+# cat >essential_pkgs_install.sh <<SH_EOF
+# #!/bin/sh
+# sudo install -m 0777 -d /opt/imports/
+# sudo install -m 0777 -d /opt/state/
+# cd /opt/imports/
 
+# base64 -d <<TAR_EOF | tar $TARFLAG -xf -
+# SH_EOF
 
-#TARFLAG="-J" # xz compression
-TARFLAG="" # no compression
-cd /opt/imports
-cat >essential_pkgs_install.sh <<SH_EOF
-#!/bin/sh
-sudo install -m 0777 -d /opt/imports/
-sudo install -m 0777 -d /opt/state/
-cd /opt/imports/
+# tar -C /opt/imports \
+#   --exclude ./essential_pkgs/lab_essential \
+#   $TARFLAG -cf - essential_pkgs \
+#   | base64 -w 72 >>essential_pkgs_install.sh
 
-base64 -d <<TAR_EOF | tar $TARFLAG -xf -
-SH_EOF
+# cat >>essential_pkgs_install.sh <<SH_EOF
+# TAR_EOF
 
-tar -C /opt/imports \
-  --exclude ./essential_pkgs/lab_essential \
-  $TARFLAG -cf - essential_pkgs \
-  | base64 -w 72 >>essential_pkgs_install.sh
+# cd essential_pkgs
+# git clone lab_essential.bundle
+# SH_EOF
 
-cat >>essential_pkgs_install.sh <<SH_EOF
-TAR_EOF
+# chmod +x essential_pkgs_install.sh
 
-cd essential_pkgs
-git clone lab_essential.bundle
-SH_EOF
-
-chmod +x essential_pkgs_install.sh
-
-
-
-
-
-
-
+## Trash test code
 # python3 -m http.server -b 0.0.0.0 8000 &
 # PHTHON3_HTTPD_PID=$!
 # docker build -t dnsmasq_svc --add-host dockerhost:host-gateway - <<EOF

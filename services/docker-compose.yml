@@ -12,3 +12,4 @@ include:
   - caddy_certs_init/docker-compose.yml
   - caddy_router/docker-compose.yml
   - gitea/docker-compose.yml
+  - gitea_sys_runner/docker-compose.yml
