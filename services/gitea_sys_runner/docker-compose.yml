@@ -1,0 +1,57 @@
+# Fetch runner token via "Settings -> Actions -> Runners -> Create new Runner"
+
+# Example Run:
+# RUNNER_TOKEN="S6kJD4Ma8fpz5WBkNHgiZG8fQgT2dc0BgaUsssaK" docker compose up -d
+
+services:
+  # Consider: Create dependency checker in init container.
+  gitea_sys_runner_init:
+    image: gitea/act_runner:latest
+    container_name: gitea_sys_runner_init
+    entrypoint: ["/bin/sh", "-c"]
+    working_dir: /data
+    command:
+      - |
+        # Fetch and install certificate for init container.
+        wget --no-check-certificate https://tls.lab/certs/root.crt -O /etc/ssl/certs/lab-root.crt
+        cat /etc/ssl/certs/lab-root.crt >> /etc/ssl/certs/ca-certificates.crt
+        
+        # Generate config if non exists.
+        if [ ! -e /data/config.yaml ]; then
+          act_runner generate-config > /data/config.yaml
+          # Remove some _very bad_ default config values.
+          sed -i '/ubuntu/d' /data/config.yaml
+        fi
+
+        # Register runner if no registration found.
+        if [ ! -e /data/.runner ]; then
+          act_runner register --no-interactive \
+            --instance https://git.lab \
+            --token "${RUNNER_TOKEN}" \
+            --name sys_runner \
+            --labels sys_runner,nodejs,ansible,docker
+        fi
+    volumes: [ "/opt/state/gitea_sys_runner/data:/data" ]
+
+  gitea_sys_runner:
+    image: git.lab/lab/gitea_sys_runner:latest
+    depends_on:
+      gitea_sys_runner_init: { condition: service_completed_successfully }
+    build:
+      dockerfile_inline: |
+        FROM gitea/act_runner:latest
+        RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
+        RUN apk add -U nodejs ansible docker
+        RUN wget --no-check-certificate https://tls.lab/certs/root.crt -O /etc/ssl/certs/lab-root.crt
+        RUN cat /etc/ssl/certs/lab-root.crt >> /etc/ssl/certs/ca-certificates.crt
+    container_name: gitea_sys_runner
+    # Required for docker in docker control.
+    privileged: true
+    environment:
+      - CONFIG_FILE=/data/config.yaml
+    # Consider an init container for the ssh keys
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/state/gitea_sys_runner/data:/data
+      - /opt/imports/gitea_sys_runner/ssh:/home/root/.ssh
+    restart: unless-stopped
