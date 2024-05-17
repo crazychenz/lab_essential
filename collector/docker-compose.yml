@@ -49,7 +49,7 @@ services:
       apk update
       apk fetch -R dnsmasq
       apk fetch -R ansible
-      apk fetch -R docker
+      apk fetch -R docker docker-cli-buildx docker-cli-compose
       apk fetch -R nodejs
       apk index --rewrite-arch x86_64 -o APKINDEX.tar.gz *.apk
   
@@ -86,25 +86,26 @@ services:
       docker rmi vaultwarden/server:latest
       docker rmi node:lts-alpine
       
-      docker pull ghcr.io/fluxcd/notification-controller
-      docker save -o ghcr.io_-_fluxcd_-_notification-controller.dockerimage ghcr.io/fluxcd/notification-controller
-      docker pull ghcr.io/fluxcd/kustomize-controller
-      docker save -o ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage ghcr.io/fluxcd/kustomize-controller
-      docker pull ghcr.io/fluxcd/helm-controller
-      docker save -o ghcr.io_-_fluxcd_-_helm-controller.dockerimage ghcr.io/fluxcd/helm-controller
-      docker pull ghcr.io/fluxcd/source-controller
-      docker save -o ghcr.io_-_fluxcd_-_source-controller.dockerimage ghcr.io/fluxcd/source-controller
-      docker pull ghcr.io/fluxcd/image-automation-controller
-      docker save -o ghcr.io_-_fluxcd_-_image-automation-controller.dockerimage ghcr.io/fluxcd/image-automation-controller
-      docker pull ghcr.io/fluxcd/image-reflector-controller
-      docker save -o ghcr.io_-_fluxcd_-_image-reflector-controller.dockerimage ghcr.io/fluxcd/image-reflector-controller
+      # https://github.com/orgs/fluxcd/packages
+      docker pull ghcr.io/fluxcd/notification-controller:v1.3.0
+      docker save -o ghcr.io_-_fluxcd_-_notification-controller.dockerimage ghcr.io/fluxcd/notification-controller:v1.3.0
+      docker pull ghcr.io/fluxcd/kustomize-controller:v1.3.0
+      docker save -o ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage ghcr.io/fluxcd/kustomize-controller:v1.3.0
+      docker pull ghcr.io/fluxcd/helm-controller:v1.0.1
+      docker save -o ghcr.io_-_fluxcd_-_helm-controller.dockerimage ghcr.io/fluxcd/helm-controller:v1.0.1
+      docker pull ghcr.io/fluxcd/source-controller:v1.3.0
+      docker save -o ghcr.io_-_fluxcd_-_source-controller.dockerimage ghcr.io/fluxcd/source-controller:v1.3.0
+      docker pull ghcr.io/fluxcd/image-automation-controller:v0.38.0
+      docker save -o ghcr.io_-_fluxcd_-_image-automation-controller.dockerimage ghcr.io/fluxcd/image-automation-controller:v0.38.0
+      docker pull ghcr.io/fluxcd/image-reflector-controller:v0.32.0
+      docker save -o ghcr.io_-_fluxcd_-_image-reflector-controller.dockerimage ghcr.io/fluxcd/image-reflector-controller:v0.32.0
 
-      docker rmi ghcr.io/fluxcd/notification-controller
-      docker rmi ghcr.io/fluxcd/kustomize-controller
-      docker rmi ghcr.io/fluxcd/helm-controller
-      docker rmi ghcr.io/fluxcd/source-controller
-      docker rmi ghcr.io/fluxcd/image-automation-controller
-      docker rmi ghcr.io/fluxcd/image-reflector-controller
+      docker rmi ghcr.io/fluxcd/notification-controller:v1.3.0
+      docker rmi ghcr.io/fluxcd/kustomize-controller:v1.3.0
+      docker rmi ghcr.io/fluxcd/helm-controller:v1.0.1
+      docker rmi ghcr.io/fluxcd/source-controller:v1.3.0
+      docker rmi ghcr.io/fluxcd/image-automation-controller:v0.38.0
+      docker rmi ghcr.io/fluxcd/image-reflector-controller:v0.32.0
 
       chmod 755 /data/docker/*
       
