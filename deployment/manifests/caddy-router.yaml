@@ -28,7 +28,7 @@ spec:
       #  image: busybox:1.32
       #  command: ['sh', '-c', 'until nc -z caddy_certs_init 443; do echo waiting for caddy_certs_init; sleep 2; done;']
       - name: caddy-certs-init
-        image: git.lab/lab/caddy:certs_init
+        image: git.lab/lab/caddy_certs_init:initial
         volumeMounts:
         - name: certs-path
           mountPath: /certs

@@ -15,7 +15,7 @@ sleep 2
 docker compose build dnsmasq_svc
 docker save -o ${DOCKER_IMG_DIR}git.lab_-_lab_-_dnsmasq_-_initial.dockerimage git.lab/lab/dnsmasq:initial
 docker compose build caddy_certs_init
-docker save -o ${DOCKER_IMG_DIR}git.lab_-_lab_-_caddy_-_certs_init.dockerimage git.lab/lab/caddy:certs_init
+docker save -o ${DOCKER_IMG_DIR}git.lab_-_lab_-_caddy_certs_init_-_initial.dockerimage git.lab/lab/caddy_certs_init:initial
 docker compose build caddy_router_svc
 docker save -o ${DOCKER_IMG_DIR}git.lab_-_lab_-_caddy_-_initial.dockerimage git.lab/lab/caddy:initial
 docker compose down
