@@ -4,11 +4,16 @@ DOCKER_IMG_DIR=/opt/imports/essential_pkgs/docker/
 
 # Import all of the docker images
 docker load < ${DOCKER_IMG_DIR}alpine_-_latest.dockerimage
-docker load < ${DOCKER_IMG_DIR}caddy_-_alpine.dockerimage
-#docker load < ${DOCKER_IMG_DIR}gitea_-_gitea_-_latest.dockerimage
 #docker load < ${DOCKER_IMG_DIR}gitea_-_act_runner_-_latest.dockerimage
-#docker load < ${DOCKER_IMG_DIR}vaultwarden_-_server_-_latest.dockerimage
-#docker load < ${DOCKER_IMG_DIR}node_-_lts-alpine.dockerimage
+
+docker load < ${DOCKER_IMG_DIR}caddy_-_alpine.dockerimage
+docker tag caddy:alpine git.lab/lab/caddy:alpine
+docker load < ${DOCKER_IMG_DIR}gitea_-_gitea_-_latest.dockerimage
+docker tag gitea/gitea:latest git.lab/lab/gitea:latest
+docker load < ${DOCKER_IMG_DIR}vaultwarden_-_server_-_latest.dockerimage
+docker tag vaultwarden/server:latest git.lab/lab/vaultwarden:latest
+docker load < ${DOCKER_IMG_DIR}node_-_lts-alpine.dockerimage
+docker tag node:lts-alpine git.lab/lab/node:lts-alpine
 
 docker compose up -d essential_pkgs_svc
 sleep 2
