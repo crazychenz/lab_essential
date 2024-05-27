@@ -27,6 +27,7 @@ spec:
       - name: gitea
         #image: gitea/gitea:1.22.0-rc1
         image: git.lab/lab/gitea:latest
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: data-volume
           mountPath: /data

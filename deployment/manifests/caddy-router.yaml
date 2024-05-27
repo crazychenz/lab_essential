@@ -38,6 +38,7 @@ spec:
       containers:
       - name: caddy
         image: git.lab/lab/caddy:initial
+        imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: caddy-config-path
           mountPath: /config
