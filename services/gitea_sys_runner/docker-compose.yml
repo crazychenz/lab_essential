@@ -6,7 +6,7 @@
 services:
   # Consider: Create dependency checker in init container.
   gitea_sys_runner_init:
-    image: gitea/act_runner:latest
+    image: git.lab/lab/gitea_act_runner:latest
     container_name: gitea_sys_runner_init
     entrypoint: ["/bin/sh", "-c"]
     working_dir: /data
