@@ -121,10 +121,28 @@ services:
     entrypoint: ["/bin/sh","-c"]
     command:
     - |
-      apk -U add curl
+      apk -U add curl git
+
+      # Download Github Actions
+      install -m 0777 -d /data/github/actions
+      cd /data/github/actions
+      git clone --mirror https://github.com/actions/checkout.git checkout
+      cd checkout && git bundle create ../checkout.bundle --all && cd ..
+      rm -rf checkout
+
+      install -m 0777 -d /data/github/docker
+      cd /data/github/docker
+      git clone --mirror https://github.com/docker/login-action.git login-action
+      cd login-action && git bundle create ../login-action.bundle --all && cd ..
+      rm -rf login-action
+
+      install -m 0777 -d /data/github/docker
+      cd /data/github/docker
+      git clone --mirror https://github.com/docker/build-push-action.git build-push-action
+      cd build-push-action && git bundle create ../build-push-action.bundle --all && cd ..
+      rm -rf build-push-action
 
       # https://github.com/corneliusweig/ketall/releases
-      install -m 0777 -d /data/github/ketall
       cd /data/github/ketall
       if [ -e "get-all-amd64-linux.tar.gz" ]; then
         echo "get-all-amd64-linux.tar.gz already downloaded. Skipping."
