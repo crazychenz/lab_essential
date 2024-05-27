@@ -11,7 +11,7 @@ until k3s ctr images import ${DOCKER_IMG_DIR}git.lab_-_lab_-_caddy_certs_init_-_
 
 until k3s ctr images import ${DOCKER_IMG_DIR}git.lab_-_lab_-_caddy_-_initial.dockerimage; do sleep 1; done;
 
-until k3s ctr images import ${DOCKER_IMG_DIR}gitea_-_gitea_-_latest.dockerimage; do sleep 1; done;
+until k3s ctr images import ${DOCKER_IMG_DIR}git.lab_-_lab_-_gitea_-_latest.dockerimage; do sleep 1; done;
 
 #until k3s ctr images import ${DOCKER_IMG_DIR}caddy_-_alpine.dockerimage; do sleep 1; done;
 #until k3s ctr images import ${DOCKER_IMG_DIR}gitea_-_act_runner_-_latest.dockerimage; do sleep 1; done;
