@@ -1,16 +1,24 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: caddy-router-ns
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: caddy-router-deployment
+  namespace: caddy-router-ns
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: caddy_router
+      app: caddy-router
   template:
     metadata:
       labels:
-        app: caddy_router
+        app: caddy-router
     spec:
       initContainers:
       #- name: wait-for-dnsmasq
@@ -52,9 +60,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: caddy-router-service
+  namespace: caddy-router-ns
 spec:
   selector:
-    app: caddy_router
+    app: caddy-router
   type: LoadBalancer
   ports:
   - name: caddy-http

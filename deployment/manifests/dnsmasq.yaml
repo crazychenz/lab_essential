@@ -1,8 +1,15 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: dnsmasq-ns
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dnsmasq-deployment
+  namespace: dnsmasq-ns
 spec:
   replicas: 1
   selector:
@@ -44,6 +51,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: dnsmasq-service
+  namespace: dnsmasq-ns
 spec:
   selector:
     app: dnsmasq

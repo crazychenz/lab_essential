@@ -1,7 +1,7 @@
 # Fetch runner token via "Settings -> Actions -> Runners -> Create new Runner"
 
 # Example Run:
-# RUNNER_TOKEN="S6kJD4Ma8fpz5WBkNHgiZG8fQgT2dc0BgaUsssaK" docker compose up -d
+# RUNNER_TOKEN="S6kJD4Ma8fpz5WBkNHgiZG8fQgT2dc0BgaUsssaK" docker compose up -d gitea_sys_runner
 
 services:
   # Consider: Create dependency checker in init container.
@@ -38,10 +38,12 @@ services:
     depends_on:
       gitea_sys_runner_init: { condition: service_completed_successfully }
     build:
+      extra_hosts:
+        - dockerhost:host-gateway
       dockerfile_inline: |
         FROM gitea/act_runner:latest
         RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
-        RUN apk add -U nodejs ansible docker
+        RUN apk add -U --allow-untrusted nodejs ansible docker docker-cli-buildx docker-cli-compose
         RUN wget --no-check-certificate https://tls.lab/certs/root.crt -O /etc/ssl/certs/lab-root.crt
         RUN cat /etc/ssl/certs/lab-root.crt >> /etc/ssl/certs/ca-certificates.crt
     container_name: gitea_sys_runner

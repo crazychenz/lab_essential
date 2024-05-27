@@ -17,14 +17,19 @@ services:
       # Note: dpkg-dev brings in oodles of extra deps.
       apt-get install -y ca-certificates curl apt-rdepends dpkg-dev
       install -m 0755 -d /etc/apt/keyrings
-      curl -fsSL https://download.docker.com/linux/debian/gpg \
-        -o /etc/apt/keyrings/docker.asc
-      chmod a+r /etc/apt/keyrings/docker.asc
+
+      if [ ! -e "/etc/apt/keyrings/docker.asc" ]; then
+        curl -fsSL https://download.docker.com/linux/debian/gpg \
+          -o /etc/apt/keyrings/docker.asc
+        chmod a+r /etc/apt/keyrings/docker.asc
+      fi
       
-      echo \
-        "deb [arch=$$(dpkg --print-architecture) signed-by=$$DOCKER_ASC] $$DOCKER_URL \
-        $$(. /etc/os-release && echo "$$VERSION_CODENAME") stable" | \
-        tee /etc/apt/sources.list.d/docker.list > /dev/null
+      if [ ! -e "/etc/apt/sources.list.d/docker.list" ]; then
+        echo \
+          "deb [arch=$$(dpkg --print-architecture) signed-by=$$DOCKER_ASC] $$DOCKER_URL \
+          $$(. /etc/os-release && echo "$$VERSION_CODENAME") stable" | \
+          tee /etc/apt/sources.list.d/docker.list > /dev/null
+      fi
       apt-get update
 
       # Download packages dependencies
@@ -66,46 +71,44 @@ services:
       install -m 0777 -d /data/docker
       cd /data/docker
       apk add -U docker
-      docker pull alpine:latest
-      docker save -o alpine_-_latest.dockerimage alpine:latest
-      docker pull caddy:alpine
-      docker save -o caddy_-_alpine.dockerimage caddy:alpine
-      docker pull gitea/gitea:latest
-      docker save -o gitea_-_gitea_-_latest.dockerimage gitea/gitea:latest
-      docker pull gitea/act_runner:latest
-      docker save -o gitea_-_act_runner_-_latest.dockerimage gitea/act_runner:latest
-      docker pull vaultwarden/server:latest
-      docker save -o vaultwarden_-_server_-_latest.dockerimage vaultwarden/server:latest
-      docker pull node:lts-alpine
-      docker save -o node_-_lts-alpine.dockerimage node:lts-alpine
 
-      docker rmi alpine:latest
-      docker rmi caddy:alpine
-      docker rmi gitea/gitea:latest
-      docker rmi gitea/act_runner:latest
-      docker rmi vaultwarden/server:latest
-      docker rmi node:lts-alpine
-      
-      # https://github.com/orgs/fluxcd/packages
-      docker pull ghcr.io/fluxcd/notification-controller:v1.3.0
-      docker save -o ghcr.io_-_fluxcd_-_notification-controller.dockerimage ghcr.io/fluxcd/notification-controller:v1.3.0
-      docker pull ghcr.io/fluxcd/kustomize-controller:v1.3.0
-      docker save -o ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage ghcr.io/fluxcd/kustomize-controller:v1.3.0
-      docker pull ghcr.io/fluxcd/helm-controller:v1.0.1
-      docker save -o ghcr.io_-_fluxcd_-_helm-controller.dockerimage ghcr.io/fluxcd/helm-controller:v1.0.1
-      docker pull ghcr.io/fluxcd/source-controller:v1.3.0
-      docker save -o ghcr.io_-_fluxcd_-_source-controller.dockerimage ghcr.io/fluxcd/source-controller:v1.3.0
-      docker pull ghcr.io/fluxcd/image-automation-controller:v0.38.0
-      docker save -o ghcr.io_-_fluxcd_-_image-automation-controller.dockerimage ghcr.io/fluxcd/image-automation-controller:v0.38.0
-      docker pull ghcr.io/fluxcd/image-reflector-controller:v0.32.0
-      docker save -o ghcr.io_-_fluxcd_-_image-reflector-controller.dockerimage ghcr.io/fluxcd/image-reflector-controller:v0.32.0
+      try_pull () {
+        IMAGE_NAME=$$1
+        IMAGE_FILE=$$2
+        IMAGE_EXISTS=0
 
-      docker rmi ghcr.io/fluxcd/notification-controller:v1.3.0
-      docker rmi ghcr.io/fluxcd/kustomize-controller:v1.3.0
-      docker rmi ghcr.io/fluxcd/helm-controller:v1.0.1
-      docker rmi ghcr.io/fluxcd/source-controller:v1.3.0
-      docker rmi ghcr.io/fluxcd/image-automation-controller:v0.38.0
-      docker rmi ghcr.io/fluxcd/image-reflector-controller:v0.32.0
+        if [ -e "$$IMAGE_FILE" ]; then
+          echo "$$IMAGE_NAME already downloaded. Skipping save."
+        else
+          if [ -z "$$(docker images -q $$IMAGE_NAME 2>/dev/null)" ]; then
+            docker pull $$IMAGE_NAME
+          else
+            echo "$$IMAGE_NAME already pulled. Skipping download."
+            IMAGE_EXISTS=1
+          fi
+
+          docker save -o $$IMAGE_FILE $$IMAGE_NAME
+
+          if [ $$IMAGE_EXISTS -eq 0 ]; then
+            echo "$$IMAGE_NAME didn't exist before. Removing $$IMAGE_NAME."
+            docker rmi $$IMAGE_NAME
+          fi
+        fi
+      }
+
+      try_pull alpine:latest alpine_-_latest.dockerimage
+      try_pull caddy:alpine caddy_-_alpine.dockerimage
+      try_pull gitea/gitea:latest gitea_-_gitea_-_latest.dockerimage
+      try_pull gitea/act_runner:latest gitea_-_act_runner_-_latest.dockerimage
+      try_pull vaultwarden/server:latest vaultwarden_-_server_-_latest.dockerimage
+      try_pull node:lts-alpine node_-_lts-alpine.dockerimage
+
+      try_pull ghcr.io/fluxcd/notification-controller:v1.3.0 ghcr.io_-_fluxcd_-_notification-controller.dockerimage
+      try_pull ghcr.io/fluxcd/kustomize-controller:v1.3.0 ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage
+      try_pull ghcr.io/fluxcd/helm-controller:v1.0.1 ghcr.io_-_fluxcd_-_helm-controller.dockerimage
+      try_pull ghcr.io/fluxcd/source-controller:v1.3.0 ghcr.io_-_fluxcd_-_source-controller.dockerimage
+      try_pull ghcr.io/fluxcd/image-automation-controller:v0.38.0 ghcr.io_-_fluxcd_-_image-automation-controller.dockerimage
+      try_pull ghcr.io/fluxcd/image-reflector-controller:v0.32.0 ghcr.io_-_fluxcd_-_image-reflector-controller.dockerimage
 
       chmod 755 /data/docker/*
       
@@ -123,19 +126,39 @@ services:
       # https://github.com/corneliusweig/ketall/releases
       install -m 0777 -d /data/github/ketall
       cd /data/github/ketall
-      curl -LO https://github.com/corneliusweig/ketall/releases/download/v1.3.8/get-all-amd64-linux.tar.gz
+      if [ -e "get-all-amd64-linux.tar.gz" ]; then
+        echo "get-all-amd64-linux.tar.gz already downloaded. Skipping."
+      else
+        curl -LO https://github.com/corneliusweig/ketall/releases/download/v1.3.8/get-all-amd64-linux.tar.gz
+      fi
 
       # https://github.com/fluxcd/flux2/releases
       install -m 0777 -d /data/github/fluxcd
       cd /data/github/fluxcd
-      curl -LO https://github.com/fluxcd/flux2/releases/download/v2.3.0/flux_2.3.0_linux_amd64.tar.gz
+      if [ -e "flux_2.3.0_linux_amd64.tar.gz" ]; then
+        echo "flux_2.3.0_linux_amd64.tar.gz already downloaded. Skipping."
+      else
+        curl -LO https://github.com/fluxcd/flux2/releases/download/v2.3.0/flux_2.3.0_linux_amd64.tar.gz
+      fi
 
       # https://github.com/k3s-io/k3s/releases
       install -m 0777 -d /data/github/k3s-io
       cd /data/github/k3s-io
-      curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s
-      curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s-airgap-images-amd64.tar.gz
+
+      if [ -e "k3s" ]; then
+        echo "k3s already downloaded. Skipping."
+      else
+        curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s
+      fi
       chmod +x k3s
+
+      if [ -e "k3s-airgap-images-amd64.tar.gz" ]; then
+        echo "k3s-airgap-images-amd64.tar.gz already downloaded. Skipping."
+      else
+        curl -LO https://github.com/k3s-io/k3s/releases/download/v1.30.0%2Bk3s1/k3s-airgap-images-amd64.tar.gz
+      fi
+
+      # Note: Build everytime to account for adjusting network interfaces.
       cat >install_k3s.sh <<EOF
       #!/bin/sh
       LAN_LISTEN_IFACE=\$(ip r s | grep ^default | cut -d ' ' -f5)

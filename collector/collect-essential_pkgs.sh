@@ -15,12 +15,11 @@ cat >essential_pkgs_install.sh <<SH_EOF
 sudo install -m 0777 -d /opt/imports/
 sudo install -m 0777 -d /opt/state/
 sudo install -m 0777 -d /opt/artifacts/
-cd /opt/imports/
-sed '1,10d' \$0 | tar x
-cd essential_pkgs
+sed '1,9d' \$0 | tar -C /opt/imports -x
+cd /opt/imports/essential_pkgs
 git clone lab_essential.bundle
 exit 0
-# Verbatim tar data following this 10th line.
+# Verbatim tar data following this 9th line.
 SH_EOF
 tar $TARFLAG -c essential_pkgs >>essential_pkgs_install.sh
 chmod +x essential_pkgs_install.sh

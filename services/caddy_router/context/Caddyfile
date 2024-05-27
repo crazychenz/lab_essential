@@ -20,7 +20,7 @@ https://git.lab {
 https://www.lab {
   tls internal
   
-  reverse_proxy http://127.0.0.1:31280 {
+  reverse_proxy http://system-manual-service.system-manual-ns.svc.cluster.local:1280 {
     header_up Host {host}
     header_up X-Real-IP {remote}
   }

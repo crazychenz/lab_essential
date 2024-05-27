@@ -1,7 +1,15 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: gitea-ns
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gitea-deployment
+  namespace: gitea-ns
 spec:
   replicas: 1
   selector:
@@ -45,6 +53,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gitea-service
+  namespace: gitea-ns
 spec:
   selector:
     app: gitea
@@ -61,6 +70,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gitea-ssh-service
+  namespace: gitea-ns
 spec:
   selector:
     app: gitea
