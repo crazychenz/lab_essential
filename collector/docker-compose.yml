@@ -7,7 +7,7 @@ services:
     working_dir: /data
     entrypoint: ["/bin/sh","-c"]
     environment:
-    - PACKAGES=docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    - PACKAGES=docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin sudo adduser git git-man tmux curl passwd
     - DOCKER_ASC=/etc/apt/keyrings/docker.asc
     - DOCKER_URL=https://download.docker.com/linux/debian
     command:
