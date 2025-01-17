@@ -1,6 +1,6 @@
 services:
   dnsmasq_svc:
-    image: git.lab/lab/dnsmasq:initial
+    image: git.lab/lab/dnsmasq:stage
     container_name: dnsmasq_svc
     build:
       dockerfile_inline: |

@@ -1,0 +1,52 @@
+networks:
+  gitea:
+    external: false
+
+services:
+  gitea_svc:
+    image: git.lab/lab/gitea:stage
+    build:
+      context: context
+      dockerfile_inline: |
+        FROM gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=db:5432
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=${POSTGRES_PASSWORD}
+      - FULL_HOSTNAME=git.lab
+    restart: unless-stopped
+    networks:
+      - gitea
+    volumes:
+      - /opt/state/lab-git/data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports: [ 127.0.0.1:1180:3000, "22:22" ]
+    depends_on:
+      gitea_db: { condition: service_healthy }
+
+  gitea_db:
+    image: git.lab/lab/postgres-14:stage
+    build:
+      dockerfile_inline: |
+        FROM postgres:14
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=gitea
+    restart: unless-stopped
+    networks:
+      - gitea
+    volumes:
+      - /opt/state/lab-git/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "gitea", "-U", "gitea"]
+      interval: 30s
+      timeout: 120s
+      retries: 5
+      start_period: 80s

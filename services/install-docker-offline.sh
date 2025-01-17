@@ -18,6 +18,7 @@ apt-get install -y docker-ce docker-ce-cli containerd.io \
 /sbin/adduser $SUDO_USER docker
 
 # Revert changes
-mv /etc/apt/sources.list.disabled /etc/apt/sources.list
+
+[ -e "/etc/apt/sources.list.disabled" ] && mv /etc/apt/sources.list.disabled /etc/apt/sources.list
 rm -f /etc/apt/sources.list.d/essential_pkgs.list
 apt-get update

@@ -8,7 +8,7 @@
 include:
   # Primary Baseline Services
   - essential_pkgs/docker-compose.yml
-  - dnsmasq/docker-compose.yml
-  - caddy_router/docker-compose.yml
-  - gitea/docker-compose.yml
+  - dns.lab/docker-compose.yml
+  - rproxy.lab/docker-compose.yml
+  - git.lab/docker-compose.yml
   - gitea_sys_runner/docker-compose.yml

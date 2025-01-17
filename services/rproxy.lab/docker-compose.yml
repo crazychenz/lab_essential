@@ -1,7 +1,7 @@
 services:
 
   caddy_certs_init:
-    image: git.lab/lab/caddy_certs_init:initial
+    image: git.lab/lab/caddy_certs_init:stage
     container_name: caddy_certs_init
     build: 
       dockerfile_inline: |
@@ -42,13 +42,13 @@ services:
         CMD ["/init-pki.sh"]
     network_mode: host
     volumes:
-      - /opt/state/caddy_certs_init/:/certs
+      - /opt/state/lab-rproxy/local-certs:/certs
 
-  caddy_router_svc:
-    image: git.lab/lab/caddy:initial
+  caddy_rproxy:
+    image: git.lab/lab/caddy:stage
     depends_on:
       caddy_certs_init: { condition: service_completed_successfully }
-    container_name: caddy_router_svc
+    container_name: caddy_rproxy
     build: 
       context: context
       dockerfile_inline: |
@@ -67,13 +67,11 @@ services:
         CMD ["/start-caddy.sh"]
 
     restart: unless-stopped
-    #network_mode: host
     ports: [ "11180:80", "11443:443", "81:81" ]
 
     extra_hosts:
     # Backend hostnames used in Caddyfile
     - dockerhost:host-gateway
-    - gitea-service:192.168.1.5
     volumes:
-      - /opt/state/caddy_router_svc/config:/config
-      - /opt/state/caddy_certs_init:/data/caddy/pki/authorities/local
+      - /opt/state/lab-rproxy/config:/config
+      - /opt/state/lab-rproxy/local-certs:/data/caddy/pki/authorities/local

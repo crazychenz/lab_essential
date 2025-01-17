@@ -6,7 +6,7 @@
 services:
   # Consider: Create dependency checker in init container.
   gitea_sys_runner_init:
-    image: git.lab/lab/gitea_act_runner:latest
+    image: git.lab/lab/gitea_sys_runner_init:stage
     container_name: gitea_sys_runner_init
     entrypoint: ["/bin/sh", "-c"]
     working_dir: /data
@@ -34,7 +34,7 @@ services:
     volumes: [ "/opt/state/gitea_sys_runner/data:/data" ]
 
   gitea_sys_runner:
-    image: git.lab/lab/gitea_sys_runner:latest
+    image: git.lab/lab/gitea_sys_runner:stage
     depends_on:
       gitea_sys_runner_init: { condition: service_completed_successfully }
     build:
