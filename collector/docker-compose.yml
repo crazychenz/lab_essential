@@ -35,7 +35,7 @@ services:
       # Download packages dependencies
       install -m 0777 -d /data/debian
       cd /data/debian
-      apt-get updates
+      apt-get update
       apt-get download $$(apt-rdepends $$PACKAGES|grep -v "^ "|grep -v "^debconf-2.0$$")
       dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
       rm -f /data/debian/.apt-acquire-privs-test*
@@ -102,6 +102,7 @@ services:
       try_pull gitea/act_runner:latest gitea_-_act_runner_-_latest.dockerimage
       try_pull vaultwarden/server:latest vaultwarden_-_server_-_latest.dockerimage
       try_pull node:lts-alpine node_-_lts-alpine.dockerimage
+      try_pull postgres:14 postgres_-_14.dockerimage
 
       try_pull ghcr.io/fluxcd/notification-controller:v1.3.0 ghcr.io_-_fluxcd_-_notification-controller.dockerimage
       try_pull ghcr.io/fluxcd/kustomize-controller:v1.3.0 ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage
@@ -143,6 +144,7 @@ services:
       rm -rf build-push-action
 
       # https://github.com/corneliusweig/ketall/releases
+      install -m 0777 -d /data/github/ketall
       cd /data/github/ketall
       if [ -e "get-all-amd64-linux.tar.gz" ]; then
         echo "get-all-amd64-linux.tar.gz already downloaded. Skipping."
