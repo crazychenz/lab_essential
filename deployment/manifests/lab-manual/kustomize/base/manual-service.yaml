@@ -1,0 +1,18 @@
+# kubectl create service nodeport app-sayok-www --tcp=80:80 --dry-run=client -o yaml
+# NODEPORT=$(kubectl get svc app-sayok-www -o jsonpath='{.spec.ports[?(@.targetPort==80)].nodePort}')
+apiVersion: v1
+kind: Service
+metadata:
+  name: manual-service
+  namespace: lab-manual-ns
+spec:
+  selector:
+    app: lab-manual
+  type: ClusterIP
+  ports:
+    - name: 80-80
+      port: 1280
+      protocol: TCP
+      targetPort: 80
+
+

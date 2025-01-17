@@ -6,7 +6,7 @@ services:
   gitea_svc:
     image: git.lab/lab/gitea_svc:stage
     build:
-      context: context
+      #context: context
       dockerfile_inline: |
         FROM git.lab/dockerhub/gitea:latest
     container_name: gitea

@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace Override
+#namespace: work-vinnie-proxy-ns
+# Name Prefix Override
+#namePrefix: dev-
+# Name Suffix Override
+#nameSuffix: -001
+
+resources:
+- rproxy-ns.yaml
+- rproxy-caddyfile-cfgmap.yaml
+- rproxy-deployment.yaml
+- rproxy-service.yaml
+# Disabled until flux installed
+#- caddy-router-flux-git-repo-ca-cert.yaml
+#- caddy-router-flux-git-repo.yaml
+#- caddy-router-flux-kustomization.yaml
+#- caddy-router-flux-image-registry.yaml
+#- caddy-router-flux-image-select-policy.yaml
+#- caddy-router-flux-image-tag-updater.yaml

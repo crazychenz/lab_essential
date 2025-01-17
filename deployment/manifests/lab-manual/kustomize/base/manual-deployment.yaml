@@ -1,0 +1,25 @@
+# kubectl create deployment app-sayok-www --image=git.vinnie.work/sayok.app/www --dry-run=client -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manual-deployment
+  namespace: lab-manual-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab-manual
+  template:
+    metadata:
+      labels:
+        app: lab-manual
+    spec:
+      containers:
+        - name: lab-manual
+          image: git.lab/lab/manual:stage # {"$imagepolicy": "lab-manual-ns:manual-flux-img-select-policy"}
+          imagePullPolicy: IfNotPresent
+  # strategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxSurge: 1
+  #     maxUnavailable: 1

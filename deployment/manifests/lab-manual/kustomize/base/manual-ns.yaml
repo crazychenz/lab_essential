@@ -1,0 +1,7 @@
+# kubectl create namespace sayok-app --dry-run=client -o yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-manual-ns
+

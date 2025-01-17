@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace Override
+#namespace: dnsmasq-ns
+# Name Prefix Override
+#namePrefix: dev-
+# Name Suffix Override
+#nameSuffix: -001
+
+resources:
+- dns-ns.yaml
+- dns-deployment.yaml
+- dns-service.yaml
+# Disabled until flux installed
+#- dnsmasq-flux-git-repo-ca-cert.yaml
+#- dnsmasq-flux-git-repo.yaml
+#- dnsmasq-flux-kustomization.yaml
+# No use?
+#- dnsmasq-flux-image-registry.yaml
+#- dnsmasq-flux-image-select-policy.yaml
+#- dnsmasq-flux-image-tag-updater.yaml

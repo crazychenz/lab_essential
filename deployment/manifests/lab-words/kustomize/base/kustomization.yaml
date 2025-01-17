@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace Override
+#namespace: system-manual-ns
+# Name Prefix Override
+#namePrefix: dev-
+# Name Suffix Override
+#nameSuffix: -001
+
+resources:
+- words-ns.yaml
+- words-deployment.yaml
+- words-service.yaml
+- words-cert-cronjob.yaml
+- words-backup-cronjobs.yaml
+# Disabled until flux installed
+#- words-flux-git-repo-ca-cert.yaml
+#- words-flux-git-repo.yaml
+#- words-flux-kustomization.yaml
+#- words-flux-image-registry.yaml
+#- words-flux-image-select-policy.yaml
+#- words-flux-image-tag-updater.yaml
