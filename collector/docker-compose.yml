@@ -83,12 +83,12 @@ services:
         else
           if [ -z "$$(docker images -q $$IMAGE_NAME 2>/dev/null)" ]; then
             docker pull $$IMAGE_NAME
-            docker tag $$IMAGE_NAME $$LAB_TAG
           else
             echo "$$IMAGE_NAME already pulled. Skipping download."
             IMAGE_EXISTS=1
           fi
 
+          docker tag $$IMAGE_NAME $$LAB_TAG
           docker save -o $$IMAGE_FILE $$LAB_TAG
 
           if [ $$IMAGE_EXISTS -eq 0 ]; then
