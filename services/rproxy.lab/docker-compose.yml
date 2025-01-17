@@ -5,7 +5,7 @@ services:
     container_name: caddy_certs_init
     build: 
       dockerfile_inline: |
-        FROM caddy:alpine
+        FROM git.lab/dockerhub/caddy:alpine
         
         # Execute Caddy's PKI application to create certificates.
         COPY <<EOF /init-pki.sh
@@ -45,14 +45,14 @@ services:
       - /opt/state/lab-rproxy/local-certs:/certs
 
   caddy_rproxy:
-    image: git.lab/lab/caddy:stage
+    image: git.lab/lab/caddy_rproxy:stage
     depends_on:
       caddy_certs_init: { condition: service_completed_successfully }
     container_name: caddy_rproxy
     build: 
       context: context
       dockerfile_inline: |
-        FROM caddy:alpine
+        FROM git.lab/dockerhub/caddy:alpine
         
         COPY Caddyfile /etc/caddy/Caddyfile
         

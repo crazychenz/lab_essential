@@ -2,7 +2,7 @@ services:
   # This service is for hosting package repos:
   # For example: http://dockerhost:8000/alpine
   essential_pkgs_svc:
-    image: git.lab/lab/caddy:alpine
+    image: git.lab/dockerhub/caddy:alpine
     container_name: essential_pkgs_svc
     volumes:
       - /opt/imports/essential_pkgs:/essential_pkgs

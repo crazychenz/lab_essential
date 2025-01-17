@@ -4,11 +4,11 @@ networks:
 
 services:
   gitea_svc:
-    image: git.lab/lab/gitea:stage
+    image: git.lab/lab/gitea_svc:stage
     build:
       context: context
       dockerfile_inline: |
-        FROM gitea/gitea:latest
+        FROM git.lab/dockerhub/gitea:latest
     container_name: gitea
     environment:
       - USER_UID=1000
@@ -31,10 +31,10 @@ services:
       gitea_db: { condition: service_healthy }
 
   gitea_db:
-    image: git.lab/lab/postgres-14:stage
+    image: git.lab/lab/gitea_db:stage
     build:
       dockerfile_inline: |
-        FROM postgres:14
+        FROM git.lab/dockerhub/postgres:14
     environment:
       - POSTGRES_USER=gitea
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
