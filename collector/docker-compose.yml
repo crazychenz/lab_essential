@@ -74,7 +74,8 @@ services:
 
       try_pull () {
         IMAGE_NAME=$$1
-        IMAGE_FILE=$$2
+        LAB_TAG=$$2
+        IMAGE_FILE=$$3
         IMAGE_EXISTS=0
 
         if [ -e "$$IMAGE_FILE" ]; then
@@ -82,34 +83,74 @@ services:
         else
           if [ -z "$$(docker images -q $$IMAGE_NAME 2>/dev/null)" ]; then
             docker pull $$IMAGE_NAME
+            docker tag $$IMAGE_NAME $$LAB_TAG
           else
             echo "$$IMAGE_NAME already pulled. Skipping download."
             IMAGE_EXISTS=1
           fi
 
-          docker save -o $$IMAGE_FILE $$IMAGE_NAME
+          docker save -o $$IMAGE_FILE $$LAB_TAG
 
           if [ $$IMAGE_EXISTS -eq 0 ]; then
             echo "$$IMAGE_NAME didn't exist before. Removing $$IMAGE_NAME."
-            docker rmi $$IMAGE_NAME
+            docker rmi $$IMAGE_NAME $$LAB_TAG
           fi
         fi
       }
 
-      try_pull alpine:latest alpine_-_latest.dockerimage
-      try_pull caddy:alpine caddy_-_alpine.dockerimage
-      try_pull gitea/gitea:latest gitea_-_gitea_-_latest.dockerimage
-      try_pull gitea/act_runner:latest gitea_-_act_runner_-_latest.dockerimage
-      try_pull vaultwarden/server:latest vaultwarden_-_server_-_latest.dockerimage
-      try_pull node:lts-alpine node_-_lts-alpine.dockerimage
-      try_pull postgres:14 postgres_-_14.dockerimage
+      try_pull \
+        alpine:latest \
+        git.lab/dockerhub/alpine:latest \
+        git.lab%2Fdockerhub%2Falpine%3Alatest.dockerimage
+      try_pull \
+        caddy:alpine \
+        git.lab/dockerhub/caddy:alpine \
+        git.lab%2Fdockerhub%2Fcaddy%3Aalpine.dockerimage
+      try_pull \
+        gitea/gitea:latest \
+        git.lab/dockerhub/gitea:latest \
+        git.lab%2Fdockerhub%2Fgitea%3Alatest.dockerimage
+      try_pull \
+        gitea/act_runner:latest \
+        git.lab/dockerhub/act_runner:latest \
+        git.lab%2Fdockerhub%2Fact_runner%3Alatest.dockerimage
+      try_pull \
+        vaultwarden/server:latest \
+        git.lab/dockerhub/vaultwarden:latest \
+        git.lab%2Fdockerhub%2Fvaultwarden%3Alatest.dockerimage
+      try_pull \
+        node:lts-alpine \
+        git.lab/dockerhub/node:lts-alpine \
+        git.lab%2Fdockerhub%2Fnode%3Alts-alpine.dockerimage
+      try_pull \
+        postgres:14 \
+        git.lab/dockerhub/postgres:14 \
+        git.lab%2Fdockerhub%2Fpostgres%3A14.dockerimage
 
-      try_pull ghcr.io/fluxcd/notification-controller:v1.3.0 ghcr.io_-_fluxcd_-_notification-controller.dockerimage
-      try_pull ghcr.io/fluxcd/kustomize-controller:v1.3.0 ghcr.io_-_fluxcd_-_kustomize-controller.dockerimage
-      try_pull ghcr.io/fluxcd/helm-controller:v1.0.1 ghcr.io_-_fluxcd_-_helm-controller.dockerimage
-      try_pull ghcr.io/fluxcd/source-controller:v1.3.0 ghcr.io_-_fluxcd_-_source-controller.dockerimage
-      try_pull ghcr.io/fluxcd/image-automation-controller:v0.38.0 ghcr.io_-_fluxcd_-_image-automation-controller.dockerimage
-      try_pull ghcr.io/fluxcd/image-reflector-controller:v0.32.0 ghcr.io_-_fluxcd_-_image-reflector-controller.dockerimage
+      try_pull \
+        ghcr.io/fluxcd/notification-controller:v1.3.0 \
+        git.lab/ghcr.io/fluxcd-notification-controller:v1.3.0 \
+        git.lab%2Fghcr.io%2Ffluxcd-notification-controller%3Av1.3.0.dockerimage
+      try_pull \
+        ghcr.io/fluxcd/kustomize-controller:v1.3.0 \
+        git.lab/ghcr.io/fluxcd-kustomize-controller:v1.3.0 \
+        git.lab%2Fghcr.io%2Ffluxcd-kustomize-controller%3Av1.3.0.dockerimage
+      try_pull \
+        ghcr.io/fluxcd/helm-controller:v1.0.1 \
+        git.lab/ghcr.io/fluxcd-helm-controller:v1.0.1 \
+        git.lab%2Fghcr.io%2Ffluxcd-helm-controller%3Av1.0.1.dockerimage
+      try_pull \
+        ghcr.io/fluxcd/source-controller:v1.3.0 \
+        git.lab/ghcr.io/fluxcd-source-controller:v1.3.0 \
+        git.lab%2Fghcr.io%2Ffluxcd-source-controller%3Av1.3.0.dockerimage
+      try_pull \
+        ghcr.io/fluxcd/image-automation-controller:v0.38.0 \
+        git.lab/ghcr.io/fluxcd-image-automation-controller:v0.38.0 \
+        git.lab%2Fghcr.io%2Ffluxcd-image-automation-controller%3Av0.38.0.dockerimage
+      try_pull \
+        ghcr.io/fluxcd/image-reflector-controller:v0.32.0 \
+        git.lab/ghcr.io/fluxcd-image-reflector-controller:v0.32.0 \
+        git.lab%2Fghcr.io%2Ffluxcd-image-reflector-controller%3Av0.32.0.dockerimage
 
       chmod 755 /data/docker/*
       
