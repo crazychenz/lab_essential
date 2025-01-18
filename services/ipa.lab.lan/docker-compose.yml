@@ -16,7 +16,7 @@ services:
     - ipa.lab.lan:192.168.1.6
     entrypoint: ["/usr/local/sbin/init"]
     volumes:
-      - /opt/state/lan-lab-ipa/data:/data:Z
+      - ./data:/data:Z
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -39,16 +39,19 @@ services:
 
 # More simple to initialize volume with `docker run` and then manage service
 # with compose or k8s after copying the volume where ever is needs to be.
+
 noop: |
   docker run -ti --rm \
-    --name ipa.lab.local \
-    -h ipa.lab.local \
-    --add-host ipa.lab.local:192.168.1.6 \
+    --name ipa.lab.lan \
+    -h ipa.lab.lan \
+    --add-host ipa.lab.lan:192.168.1.6 \
     --add-host dockerhost:host-gateway \
     -v $(pwd)/data:/data:Z \
     -p 443:443 -p 80:80 -p 389:389 -p 636:636 -p 53:53 \
     freeipa/freeipa-server:rocky-9 \
     --setup-dns --auto-reverse
+  
+#   docker exec -ti ipa.lab.lan kinit admin
 
 # Note: Create krb ticket with `kinit admin`. Ticket will live in `/tmp`.
 # Note: `ipa` is the cli to use with generated krb ticket.

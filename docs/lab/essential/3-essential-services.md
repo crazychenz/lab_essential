@@ -229,3 +229,58 @@ flux bootstrap git \
 Verify flux health with:
 
 `KUBECONFIG=/etc/rancher/k3s/k3s.yaml flux check`
+
+
+
+
+## FreeIPA
+
+FreeIPA container requires user namespaces. When enabling user namespaces with container runtimes, you can no longer use `--network host`. (Possibly a work around with docker bridge networking?) UID/GIDs of mounted volumes files in host paths may not be what you expect.
+
+/etc/docker/daemon.json
+
+```json
+{
+  "data-root": "/opt/docker/data-root",
+  "userns-remap": "default"
+}
+```
+
+Must set a hostname that is FQDN. Hostname must have 3 parts. This is why I used `ipa.lab.lan` instead of what I really wanted (`ipa.lab`).
+
+```sh
+#!/bin/sh
+
+docker run -ti --rm \
+  --name ipa.lab.lan \
+  -h ipa.lab.lan \
+  --add-host ipa.lab.lan:192.168.1.6 \
+  --add-host dockerhost:host-gateway \
+  -v $(pwd)/data:/data:Z \
+  -p 443:443 -p 80:80 -p 389:389 -p 636:636 -p 53:53/tcp -p 53:53/udp \
+  freeipa/freeipa-server:rocky-9 \
+  --setup-dns --auto-reverse $@
+```
+
+Run the following to get a krb ticket generated in the container's `/tmp` folder:
+
+```sh
+docker exec -ti ipa.lab.lan kinit admin
+```
+
+If it fails, try again a few times.
+
+When accessing `https://ipa.lab.lan` from a web browser, a web server (not in a web form) will pop-up. Keep clicking cancel until you get to the web form login. If you attempt to login with `admin`, it may say the session is expired. Keep trying and it should work on the 2nd or 3rd try.
+
+Things To Investigate:
+
+- Running FreeIPA in K8s. Note: K8s has no _official_ user namespaces support. K3s supports user namespaces via containerd configurations. Note: host networking and host paths will behave differently. `:(`.
+- Install FreeIPA in docker compose and/or kubernetes.
+- What is the process involved with using FreeIPA LDAP?
+- What is the process involved with using FreeIPA DNS?
+- What is the process involved with using FreeIPA CA?
+- What is the process involved with putting a reverse proxy in front of FreeIPA?
+
+Initial Thoughts:
+
+- FreeIPA is a bloated and over secured suite of tools with poor documentation, poor user experience, and not a lot of value above piecing together all the parts I need manually. There are some, "I wish that was turn key" kinds of things that come with FreeIPA, but the heft and demands the toolset make without permitting me to easily waive them is driving me away.
