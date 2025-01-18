@@ -1,0 +1,56 @@
+services:
+  freeipa_svc:
+    #image: git.lab/lab/freeipa-server-rocky-9:stage
+    image: freeipa/freeipa-server:rocky-9
+    container_name: ipa.lab.lan
+    hostname: ipa.lab.lan
+    build:
+      dockerfile_inline: |
+        FROM freeipa/freeipa-server:rocky-9
+      extra_hosts: [ "dockerhost:host-gateway" ]
+    restart: unless-stopped
+    dns: [ "9.9.9.9" ]
+    dns_search: lab.lan
+    extra_hosts:
+    - dockerhost:host-gateway
+    - ipa.lab.lan:192.168.1.6
+    entrypoint: ["/usr/local/sbin/init"]
+    volumes:
+      - /opt/state/lan-lab-ipa/data:/data:Z
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+    # DNS
+    - "53:53/tcp"
+    - "53:53/udp"
+    # NTP
+    - "123:123/udp"
+    # Kerberos
+    - "88:88/tcp"
+    - "88:88/udp"
+    - "464:464/tcp"
+    - "464:464/udp"
+    # LDAP
+    - "389:389/tcp"
+    - "636:636/tcp"
+    # HTTP
+    - "2443:443/tcp"
+    - "2080:80/tcp"
+
+# More simple to initialize volume with `docker run` and then manage service
+# with compose or k8s after copying the volume where ever is needs to be.
+noop: |
+  docker run -ti --rm \
+    --name ipa.lab.local \
+    -h ipa.lab.local \
+    --add-host ipa.lab.local:192.168.1.6 \
+    --add-host dockerhost:host-gateway \
+    -v $(pwd)/data:/data:Z \
+    -p 443:443 -p 80:80 -p 389:389 -p 636:636 -p 53:53 \
+    freeipa/freeipa-server:rocky-9 \
+    --setup-dns --auto-reverse
+
+# Note: Create krb ticket with `kinit admin`. Ticket will live in `/tmp`.
+# Note: `ipa` is the cli to use with generated krb ticket.
+# Note: Web **server** login is admin@LAB.LAN.
+# Note: Web **page** login is admin.
