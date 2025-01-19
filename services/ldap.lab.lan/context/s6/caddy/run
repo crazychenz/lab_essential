@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /www
+/usr/sbin/caddy run --config /etc/caddy/Caddyfile --adapter caddyfile

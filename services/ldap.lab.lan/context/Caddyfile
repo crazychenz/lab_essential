@@ -1,0 +1,24 @@
+ldap.lab.lan:80 {
+
+    root * /usr/share/webapps/phpldapadmin
+
+    log {
+        output file /var/log/caddy/ldap.access.log
+        format console
+    }
+
+    # Encode responses in zstd or gzip, depending on the
+    # availability indicated by the browser.
+    encode zstd gzip
+
+    # Configures multiple PHP-related settings
+    php_fastcgi unix//run/php/php-fpm.sock
+
+    # Prevent access to dot-files, except .well-known
+    @dotFiles {  
+      path */.*  
+      not path /.well-known/*  
+    }
+
+    file_server
+}

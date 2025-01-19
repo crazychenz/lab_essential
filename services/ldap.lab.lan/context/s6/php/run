@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd /www
+# Use `su-exec $USER` to change permissions.
+/usr/sbin/php-fpm82 -FO

@@ -1,0 +1,39 @@
+#dn: ou=users,dc=lab,dc=lan
+#objectClass: organizationalUnit
+#ou: users
+
+dn: cn=admin,ou=users,dc=lab,dc=lan
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: admin
+cn: admin
+uidNumber: 0
+gidNumber: 0
+homeDirectory: /home/admin
+sn: Istrator
+mail: admin@lab.lan
+# "password"
+userPassword: {SSHA}D2QRV/ixbxalyYZFtXV0mBZVa7C0ICxU
+
+dn: cn=ldapadmins,ou=groups,dc=lab,dc=lan
+objectClass: groupOfNames
+cn: ldapadmins
+member: cn=admin,ou=users,dc=lab,dc=lan
+
+dn: cn=users,ou=groups,dc=lab,dc=lan
+objectClass: posixGroup
+objectClass: top
+cn: users
+gidNumber: 10000
+memberUid: admin
+
+dn: cn=admins,ou=groups,dc=lab,dc=lan
+objectClass: posixGroup
+objectClass: top
+cn: admins
+gidNumber: 10000
+memberUid: admin
+
+
+

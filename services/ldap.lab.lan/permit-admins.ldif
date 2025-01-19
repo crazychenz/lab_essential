@@ -1,0 +1,17 @@
+
+dn: olcDatabase={2}mdb,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to *
+  by dn="cn=admin,dc=lab,dc=lan" manage
+  by dn="cn=admin,ou=users,dc=lab,dc=lan" manage
+  by * break
+-
+add: olcAccess
+olcAccess: {1}to dn.children="ou=users,dc=lab,dc=lan" attrs=userPassword,shadowExpire,shadowInactive,shadowLastChange,shadowMax,shadowMin,shadowWarning
+  by self write
+  by anonymous auth
+-
+add: olcAccess
+olcAccess: {2}to dn.subtree="dc=lab,dc=lan"
+  by self read
