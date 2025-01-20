@@ -25,10 +25,10 @@ spec:
         #   nameservers: [ "9.9.9.9", "1.1.1.1" ]
         #   searches: [ "lab.lan" ]
         env:
-        - { name: LDAP_NAME, value: Lab LDAP }
-        - { name: LDAP_HOST, value: ldap.lab.lan }
-        - { name: LDAP_BASE, value: dc=lab,dc=lan }
-        - { name: LDAP_PORT, value: 389 }
+        - { name: LDAP_NAME, value: "Lab LDAP" }
+        - { name: LDAP_HOST, value: "ldap.lab.lan" }
+        - { name: LDAP_BASE, value: "dc=lab,dc=lan" }
+        - { name: LDAP_PORT, value: "389" }
 
         - name: LDAP_BIND_DN
           valueFrom: { secretKeyRef: { name: ldapadmin-secrets, key: LDAP_BIND_DN } } #cn=admin,dc=lab,dc=lan

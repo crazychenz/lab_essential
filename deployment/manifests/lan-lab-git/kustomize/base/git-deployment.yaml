@@ -16,7 +16,7 @@ spec:
     spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
-      - name: gitea_svc
+      - name: gitea-svc
         image: git.lab.lan/lab/gitea_svc:stage
         imagePullPolicy: IfNotPresent
         volumeMounts:

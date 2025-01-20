@@ -28,9 +28,9 @@ spec:
         - name: certs-volume
           mountPath: /opt/bitnami/openldap/certs
         env:
-        - { name: LDAP_PORT_NUMBER, value: 389 }
-        - { name: LDAP_ROOT, value: dc=lab,dc=lan }
-        - { name: LDAP_CONFIG_ADMIN_ENABLED, value: yes }
+        - { name: LDAP_PORT_NUMBER, value: "389" }
+        - { name: LDAP_ROOT, value: "dc=lab,dc=lan" }
+        - { name: LDAP_CONFIG_ADMIN_ENABLED, value: "yes" }
 
         - name: LDAP_ADMIN_USERNAME
           valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_ADMIN_USERNAME } } #admin
