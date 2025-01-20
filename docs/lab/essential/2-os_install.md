@@ -20,7 +20,7 @@ I will quickly rush through many of my conventions for setting up a VM for the d
 
 5. Run through the various dialogs to setup the OS as desired.
 
-- Recommended at least 4 GB RAM, 32 GB Disk with LVM all in one partition.
+- Recommended at least 8 GB RAM, 32 GB Disk with LVM all in one partition.
 - Optionally omit the Desktop Environments. (We can add something more minimal later.)
 
 6. If you are connected to a network with access to an `apt` repo, after the first boot, ensure that all packages are upgraded. In the terminal, run something like the following:

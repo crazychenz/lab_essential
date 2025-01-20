@@ -130,7 +130,7 @@ services:
       try_pull \
         bitnami/openldap:latest \
         git.lab.lan/dockerhub/bitnami_openldap:latest \
-        git.lab.lan%2Fdockerhub%bitnami_openldap%3Alatest.dockerimage
+        git.lab.lan%2Fdockerhub%2Fbitnami_openldap%3Alatest.dockerimage
 
       try_pull \
         ghcr.io/fluxcd/notification-controller:v1.3.0 \
