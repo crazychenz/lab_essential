@@ -1,3 +1,6 @@
 collector/essential_pkgs
 collector/essential_pkgs_install.sh
 **/flux
+
+services/ipa.lab.lan/data
+services/ldap.lab.lan/data
