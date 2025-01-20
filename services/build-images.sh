@@ -36,12 +36,12 @@ sleep 3
 
   docker compose build openldap_svc
   docker save \
-    -o ${DOCKER_IMG_DIR}git.lab.lan%2Flab%openldap_svc%3Astage.dockerimage \
+    -o ${DOCKER_IMG_DIR}git.lab.lan%2Flab%2Fopenldap_svc%3Astage.dockerimage \
     git.lab.lan/lab/openldap_svc:stage
 
   docker compose build phpldapadmin_svc
   docker save \
-    -o ${DOCKER_IMG_DIR}git.lab.lan%2Flab%phpldapadmin_svc%3Astage.dockerimage \
+    -o ${DOCKER_IMG_DIR}git.lab.lan%2Flab%2Fphpldapadmin_svc%3Astage.dockerimage \
     git.lab.lan/lab/phpldapadmin_svc:stage
 
   docker compose build gitea_db # builds git.lab.lan/lab/gitea_db:stage
