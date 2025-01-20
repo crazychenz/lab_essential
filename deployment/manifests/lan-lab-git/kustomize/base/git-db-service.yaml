@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: git-db-service
+  namespace: lan-lab-git-ns
+spec:
+  selector:
+    app: lan-lab-git-db
+  type: ClusterIP
+  ports:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    targetPort: 5432

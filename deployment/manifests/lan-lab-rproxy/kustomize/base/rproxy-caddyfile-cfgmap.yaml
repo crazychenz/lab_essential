@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rproxy-caddyfile-cfgmap
+  namespace: lan-lab-rproxy-ns
+data:
+  Caddyfile: |
+    # This data is from the ConfigMap: proxy-caddyfile-cfgmap
+
+    {
+      log {
+          output stdout
+          level DEBUG
+      }
+    }
+
+
+    https://words.lab.lan {
+      tls internal
+      
+      reverse_proxy http://words-service.lan-lab-words-ns:1080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+      }
+    }
+
+    https://git.lab.lan {
+      tls internal
+      
+      # gitea-service from extra_hosts OR ClusterIP
+      reverse_proxy http://git-service.lan-lab-git-ns:1180 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+      }
+    }
+
+    https://www.lab.lan {
+      tls internal
+      
+      reverse_proxy http://manual-service.lan-lab-manual-ns:1280 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+      }
+    }
+
+    https://ldap.lab.lan {
+      tls internal
+      
+      reverse_proxy http://ldapadmin-service.lan-lab-ldap-ns:1380 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+      }
+    }
+
+    https://tls.lab.lan {
+      tls internal
+      
+      root * /public
+      file_server browse
+    }
+
+    http://tls.lab.lan {
+      root * /public
+      file_server browse
+    }
+
+
+
+# Verify Caddyfile with:
+# kubectl -n lab-rproxy-ns exec -ti pod/rproxy-deployment-c98c6ddc4-8gs8w -- cat /etc/caddy/Caddyfile
+
+# Restart Deployment with:
+# kubectl -n lab-rproxy-ns rollout restart deployment/rproxy-deployment
+
+# TODO: Is there a way to reload cfgmap without restart?

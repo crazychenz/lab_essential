@@ -1,0 +1,16 @@
+---
+# Port used by caddy-router-deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: git-service
+  namespace: lan-lab-git-ns
+spec:
+  selector:
+    app: lan-lab-git
+  type: ClusterIP
+  ports:
+  - name: http
+    protocol: TCP
+    port: 1180
+    targetPort: 3000

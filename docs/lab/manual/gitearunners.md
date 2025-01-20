@@ -26,9 +26,9 @@ gitea_sys_runner:
       FROM gitea/act_runner:latest-dind-rootless
       USER root
       RUN apk add -U nodejs
-      RUN wget --no-check-certificate https://tls.lab/certs/root.crt \
+      RUN wget --no-check-certificate https://tls.lab.lan/certs/root.crt \
         -O /etc/ssl/certs/lab-root.crt \
-        && wget --no-check-certificate https://tls.lab/certs/intermediate.crt \
+        && wget --no-check-certificate https://tls.lab.lan/certs/intermediate.crt \
         -O /etc/ssl/certs/lab-intermediate.crt \
         && cat /etc/ssl/certs/lab-root.crt /etc/ssl/certs/ca-certificates.crt \
         && cat /etc/ssl/certs/lab-intermediate.crt >> /etc/ssl/certs/ca-certificates.crt

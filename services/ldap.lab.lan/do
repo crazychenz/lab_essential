@@ -1,0 +1,94 @@
+#!/bin/sh
+
+
+usage() {
+  echo "Possible Targets:"
+  echo "- build - docker build"
+  echo "- push - docker push"
+  echo "- start - docker compose up"
+  echo "- stop - docker compose down"
+  echo "- restart - stop & start"
+  echo "- cicd - build & push"
+  echo "- deploy - git checkout/merge/push in deploy"
+  exit 1
+}
+
+if [ $# -lt 1 ]; then
+  usage
+fi
+
+DO_CMD=$1
+TGT_OBJ="$2"
+WD=$(pwd)
+
+GIT_BRANCH=`git symbolic-ref --short HEAD`
+GIT_SHA=`git rev-parse --short=5 HEAD`
+BLD_TIME=`date +%Y%m%d%H%M%S`
+TGT_TAG=$GIT_BRANCH-$BLD_TIME-$GIT_SHA
+
+case $DO_CMD in
+
+  start)
+    docker compose up -d
+    ;;
+
+  stop)
+    docker compose down
+    ;;
+
+  restart)
+    ./do stop ; ./do start
+    ;;
+
+  build)
+    # Note: I would prefer to use `--strip-components=1` with ADD, but
+    # that option does not exist. Therefore we strip when building the tar.
+    #yarn build && tar -cf oci/static-site/context/build.tar -C build .
+    #cd oci/static-site && ./build.sh && cd ${WD}
+
+    docker compose build $TGT_OBJ
+    
+    ;;
+
+  tag)
+    # Tag with branch-time-commit (e.g. deploy-20240526094824-9f765)
+    echo $TGT_TAG
+    ;;
+
+  push)
+    #cd oci/static-site && ./push.sh && cd ${WD}
+    CUR_TAG=stage
+
+    echo Pushing tag: $TGT_TAG
+
+    if [ "$TGT_OBJ" = "openldap_svc" -o "$TGT_OBJ" = "" ]; then
+      IMG_PREFIX=git.vinnie.work/vinnie.work/openldap_svc
+      docker tag $IMG_PREFIX:$CUR_TAG $IMG_PREFIX:$TGT_TAG
+      docker push $IMG_PREFIX:$TGT_TAG
+    fi
+
+    if [ "$TGT_OBJ" = "phpldapadmin_svc" -o "$TGT_OBJ" = "" ]; then
+      IMG_PREFIX=git.vinnie.work/vinnie.work/phpldapadmin_svc
+      docker tag $IMG_PREFIX:$CUR_TAG $IMG_PREFIX:$TGT_TAG
+      docker push $IMG_PREFIX:$TGT_TAG
+    fi
+
+    ;;
+
+  cicd)
+    ./do build $TGT_OBJ && ./do push $TGT_OBJ
+    ;;
+
+  deploy)
+    # Guard against dirty repos.
+    git status 2>/dev/null | grep "nothing to commit" || exit 1
+    git checkout deploy || git checkout -b deploy
+    git merge main || git merge main --rebase
+    git push origin deploy
+    git checkout main
+    ;;
+
+  *)
+    usage
+    ;;
+esac

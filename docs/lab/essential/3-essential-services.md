@@ -105,8 +105,8 @@ everything by continually running `kubectl get pods -A`
 Test that DNS is working from dnsmasq.
 
 ```sh
-nslookup git.lab 192.168.1.5 # Or whatever your node IP is.
-curl -k https://git.lab
+nslookup git.lab.lan 192.168.1.5 # Or whatever your node IP is.
+curl -k https://git.lab.lan
 ```
 
 Change `/etc/resolv.conf` to non-localhost interface IP (e.g. 192.168.1.5) on k8s node. Verify coredns is reporting from dnsmasq. Do a `kubectl rollout reset ...` if not.
@@ -116,7 +116,7 @@ Change `/etc/resolv.conf` to non-localhost interface IP (e.g. 192.168.1.5) on k8
 ## Install Caddy Certificate in k8s node
 
 ```sh
-sudo curl -k https://tls.lab/certs/root.crt \
+sudo curl -k https://tls.lab.lan/certs/root.crt \
   -o /usr/local/share/ca-certificates/lab-root.crt
 sudo update-ca-certificates
 
@@ -150,7 +150,7 @@ TODO: Refactor Gitea with Postgres?
 
 ## Initialize Gitea
 
-- Visit `https://git.lab` from a web browser.
+- Visit `https://git.lab.lan` from a web browser.
 - Keep all of the defaults except ... Create an admin account (e.g. `ladmin`).
 - Save changes.
 
@@ -177,7 +177,7 @@ automated bot accounts), there are several things you'll want to do:
 Login to the gitea docker repository from any accounts that will need access:
 
 ```sh
-docker login -u cicd git.lab
+docker login -u cicd git.lab.lan
 ```
 
 
@@ -208,7 +208,7 @@ Install flux onto system.
 
 `sudo tar -xzof /opt/imports/essential_pkgs/github/fluxcd/flux_*_linux_amd64.tar.gz -C /usr/local/bin`
 
-In our Gitea applications (https://git.lab), create `lab/flux-config` Gitea repo.
+In our Gitea applications (https://git.lab.lan), create `lab/flux-config` Gitea repo.
 
 Check pre-installation conditions:
 
@@ -219,7 +219,7 @@ Bootstrap flux:
 ```sh
 KUBECONFIG=/etc/rancher/k3s/k3s.yaml \
 flux bootstrap git \
-  --url=ssh://git@git.lab/lab/flux-config \
+  --url=ssh://git@git.lab.lan/lab/flux-config \
   --branch=deploy \
   --private-key-file=/home/cicd/.ssh/id_rsa \
   --path=clusters/lab \
@@ -284,3 +284,67 @@ Things To Investigate:
 Initial Thoughts:
 
 - FreeIPA is a bloated and over secured suite of tools with poor documentation, poor user experience, and not a lot of value above piecing together all the parts I need manually. There are some, "I wish that was turn key" kinds of things that come with FreeIPA, but the heft and demands the toolset make without permitting me to easily waive them is driving me away.
+
+- FreeIPA probably needs its own _machine_ (i.e. kernel) to run within based on its architecture and requirements. It is not suitable for containerization or kubernetes.
+
+
+## OpenLDAP
+
+bitnami/openldap:latest
+rapidfort/openldap-ib:latest
+
+
+https://www.ldap-account-manager.org
+https://github.com/osixia/docker-phpLDAPadmin
+osixia/phpldapadmin:stable
+mirantis/phpldapadmin:latest
+
+
+
+
+
+
+
+
+
+
+https://www.zabbix.com/
+https://www.tiredofit.ca/
+https://github.com/fusiondirectory/fusiondirectory
+tiredofit/openldap (w/o fusiondirectory)
+tiredofit/openldap-fusiondirectory + tiredofit/fusiondirectory (w/ fusiondirectory)
+https://github.com/tiredofit/docker-openldap
+https://github.com/tiredofit/docker-openldap-fusiondirectory
+https://github.com/tiredofit/docker-fusiondirectory
+
+```sh
+# --- OpenLDAP Volumes ---
+# data
+/var/lib/openldap
+# config
+/etc/openldap/slapd.d
+# init scripts
+/assets/custom-scripts/
+# post-backup scripts
+/assets/custom-backup-scripts/
+# certs
+/certs/
+# backup
+/data/backup
+
+# --- FusionDirectory Volumes ---
+# /www/fusiondirectory/html overrides
+/assets/fusiondirectory
+# custom plugins
+/assets/plugins-custom/
+# custom schemas
+/assets/fusiondirectory-custom/
+
+# --- FusionDirectory Volumes ---
+```
+
+So to use fusiondirectory, you have to preload your directory with fusiondirectory schema. WTF.
+
+To use tiredofit's fusiondirectory, you should ignore `tiredofit/openldap`. Instead, you launch `tiredofit/openldap-fusiondirectory` (Which does not include fusiondirectory, only the required fusiondirectory schemas). Then to use fusiondirectory, you need to launch `tiredofit/fusiondirectory` that is configured to connect to the OpenLDAP container. Ugh.   ... Big picture wasn't documented.
+
+TODO: zabbix

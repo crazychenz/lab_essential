@@ -37,14 +37,14 @@ services:
     dns:
     - 9.9.9.9
     - 1.1.1.1
-    dns_search: lab
+    dns_search: lab.lan
     extra_hosts:
     - dockerhost:host-gateway
-    - git.lab:192.168.1.10
-    - words.lab:192.168.1.10
-    - dns.lab:192.168.1.10
-    - www.lab:192.168.1.10
-    - tls.lab:192.168.1.10
+    - git.lab.lan:192.168.1.10
+    - words.lab.lan:192.168.1.10
+    - dns.lab.lan:192.168.1.10
+    - www.lab.lan:192.168.1.10
+    - tls.lab.lan:192.168.1.10
     entrypoint: ["/usr/sbin/dnsmasq", "--no-daemon"]
 ```
 

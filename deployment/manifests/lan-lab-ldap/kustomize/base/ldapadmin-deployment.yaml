@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldapadmin-deployment
+  namespace: lan-lab-ldap-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lan-lab-ldapadmin
+  template:
+    metadata:
+      labels:
+        app: lan-lab-ldapadmin
+    spec:
+      containers:
+      - name: lan-lab-ldapadmin
+        image: git.lab.lan/lab/phpldapadmin_svc:stage
+        imagePullPolicy: IfNotPresent
+        # Note: --interface=eth0 implicitly overrides local-service and
+        #       local-service prevents dnsmasq from serving routed traffic
+        command: ["/init.sh"]
+        # dnsConfig:
+        #   nameservers: [ "9.9.9.9", "1.1.1.1" ]
+        #   searches: [ "lab.lan" ]
+        env:
+        - { name: LDAP_NAME, value: Lab LDAP }
+        - { name: LDAP_HOST, value: ldap.lab.lan }
+        - { name: LDAP_BASE, value: dc=lab,dc=lan }
+        - { name: LDAP_PORT, value: 389 }
+
+        - name: LDAP_BIND_DN
+          valueFrom: { secretKeyRef: { name: ldapadmin-secrets, key: LDAP_BIND_DN } } #cn=admin,dc=lab,dc=lan
+        - name: LDAP_BIND_PW
+          valueFrom: { secretKeyRef: { name: ldapadmin-secrets, key: LDAP_BIND_PW } } #password
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

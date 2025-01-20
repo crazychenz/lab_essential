@@ -1,12 +1,16 @@
 services:
   openldap_svc:
-    hostname: ldap.lab.lan
     # https://hub.docker.com/r/bitnami/openldap
-    image: bitnami/openldap:latest
+    image: git.lab.lan/lab/openldap_svc:stage
+    container_name: openldap_svc
+    build:
+      context: context/openldap
+      dockerfile_inline: |
+        FROM git.lab.lan/dockerhub/bitnami_openldap:latest
+    hostname: ldap.lab.lan
     extra_hosts:
     - dockerhost:host-gateway
-    - ldap.lab.lan:192.168.1.6
-    container_name: openldap_svc
+    - ldap.lab.lan:192.168.1.6 
     restart: unless-stopped
     ports:
     - 389:389
@@ -28,14 +32,30 @@ services:
     - ./data/certs:/opt/bitnami/openldap/certs
 
   phpldapadmin_svc:
-    image: myphpldapadmin
+    image: git.lab.lan/lab/phpldapadmin_svc:stage
     container_name: phpldapadmin1_svc
+    build:
+      context: context/phpldapadmin
+      dockerfile_inline: |
+        FROM git.lab.lan/dockerhub/alpine:latest
+        RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
+        RUN apk add -U --allow-untrusted --no-cache phpldapadmin caddy php82-fpm s6
+        COPY php.ini /etc/php82/
+        COPY init.sh /
+        COPY Caddyfile /etc/caddy/
+        COPY www.conf /etc/php82/php-fpm.d/
+        COPY config.php /etc/phpldapadmin/
+        RUN mkdir /etc/s6
+        COPY s6/ /etc/s6/
+        RUN mkdir /www
+        WORKDIR /www
+        ENTRYPOINT ["/init.sh"]
     extra_hosts:
     - dockerhost:host-gateway
     - ldap.lab.lan:192.168.1.6
     restart: unless-stopped
     ports:
-    - 80:80
+    - 1380:80
     environment:
     - LDAP_NAME=Lab LDAP
     - LDAP_HOST=ldap.lab.lan

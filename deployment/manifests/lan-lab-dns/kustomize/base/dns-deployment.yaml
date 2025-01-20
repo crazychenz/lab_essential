@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dns-deployment
+  namespace: lan-lab-dns-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lan-lab-dns
+  template:
+    metadata:
+      labels:
+        app: lan-lab-dns
+    spec:
+      containers:
+      - name: lan-lab-dns
+        image: git.lab.lan/lab/dnsmasq_svc:stage
+        imagePullPolicy: IfNotPresent
+        # Note: --interface=eth0 implicitly overrides local-service and
+        #       local-service prevents dnsmasq from serving routed traffic
+        command: ["/usr/sbin/dnsmasq", "--no-daemon", "--interface=eth0"]
+      dnsConfig:
+        nameservers: [ "9.9.9.9", "1.1.1.1" ]
+        searches: [ "lab.lan" ]
+      hostAliases:
+      - ip: "192.168.1.5"
+        hostnames:
+        - "git.lab.lan"
+        - "words.lab.lan"
+        - "www.lab.lan"
+        - "uptime.lab.lan"
+        - "chat.lab.lan"
+        - "tls.lab.lan"
+      #- ip: "192.168.56.50"
+      #  hostnames:
+      #  - "nas.lab.lan"
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

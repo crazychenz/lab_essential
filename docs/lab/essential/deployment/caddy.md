@@ -120,7 +120,7 @@ services:
       - /opt/state/caddy_certs_init:/data/caddy/pki/authorities/local
 ```
 
-This caddy service container has it's configuration file (`Caddyfile`) embedded into the container image. When the container starts, it always copies the public certificates to a `/public/certs` folder so that clients can easily access certificates via `https://tls.lab/certs/`. The certificates are made available to the container via the `/opt/state/caddy_certs_init` volume mount.
+This caddy service container has it's configuration file (`Caddyfile`) embedded into the container image. When the container starts, it always copies the public certificates to a `/public/certs` folder so that clients can easily access certificates via `https://tls.lab.lan/certs/`. The certificates are made available to the container via the `/opt/state/caddy_certs_init` volume mount.
 
 <!-- TODO: Come up with a better file index and 302 a host for certs to it. -->
 
@@ -141,7 +141,7 @@ For the caddy configuration, we've added a few host routed endpoints. Each endpo
 `/opt/services/lab_services/contexts/caddy_svc/Caddyfile`:
 
 ```Caddyfile
-https://words.lab {
+https://words.lab.lan {
   tls internal
   
   reverse_proxy http://127.0.0.1:1080 {
@@ -150,7 +150,7 @@ https://words.lab {
   }
 }
 
-https://git.lab {
+https://git.lab.lan {
   tls internal
   
   reverse_proxy http://127.0.0.1:1180 {
@@ -159,7 +159,7 @@ https://git.lab {
   }
 }
 
-https://www.lab {
+https://www.lab.lan {
   tls internal
   
   reverse_proxy http://127.0.0.1:1280 {
@@ -168,7 +168,7 @@ https://www.lab {
   }
 }
 
-https://tls.lab {
+https://tls.lab.lan {
   tls internal
   
   root * /public
@@ -201,7 +201,7 @@ Note: You can add as many services as you'd like at this point. As long as the s
 - Copy certificate from running caddy service and install in a Linux host.
 
     ```sh
-    sudo curl -k https://tls.lab/certs/root.crt \
+    sudo curl -k https://tls.lab.lan/certs/root.crt \
       -o /usr/local/share/ca-certificates/lab-root.crt
     sudo update-ca-certificates
     ```
@@ -209,7 +209,7 @@ Note: You can add as many services as you'd like at this point. As long as the s
 - Copy certificate from running caddy service and install in Linux without `update-ca-certificates`:
 
     ```sh
-    sudo wget --no-check-certificate https://tls.lab/certs/root.crt \
+    sudo wget --no-check-certificate https://tls.lab.lan/certs/root.crt \
       -O /usr/local/share/ca-certificates/lab-root.crt \
       && cat /usr/local/share/ca-certificates/lab-root.crt \
         | sudo tee -a /etc/ssl/certs/ca-certificates.crt

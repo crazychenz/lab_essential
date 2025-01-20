@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldap-deployment
+  namespace: lan-lab-ldap-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lan-lab-ldap
+  template:
+    metadata:
+      labels:
+        app: lan-lab-ldap
+    spec:
+      # dnsConfig:
+      #   nameservers: [ "9.9.9.9", "1.1.1.1" ]
+      #   searches: [ "lab.lan" ]
+      containers:
+      - name: lan-lab-ldap
+        image: git.lab.lan/lab/openldap_svc:stage
+        imagePullPolicy: IfNotPresent
+        command: ["/init.sh"]
+        volumeMounts:
+        - name: openldap-volume
+          mountPath: /bitnami/openldap
+        - name: certs-volume
+          mountPath: /opt/bitnami/openldap/certs
+        env:
+        - { name: LDAP_PORT_NUMBER, value: 389 }
+        - { name: LDAP_ROOT, value: dc=lab,dc=lan }
+        - { name: LDAP_CONFIG_ADMIN_ENABLED, value: yes }
+
+        - name: LDAP_ADMIN_USERNAME
+          valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_ADMIN_USERNAME } } #admin
+        - name: LDAP_ADMIN_PASSWORD
+          valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_ADMIN_PASSWORD } } #password
+        - name: LDAP_CONFIG_ADMIN_USERNAME
+          valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_CONFIG_ADMIN_USERNAME } } #config
+        - name: LDAP_CONFIG_ADMIN_PASSWORD
+          valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_CONFIG_ADMIN_PASSWORD } } #password
+        - name: LDAP_USERS
+          valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_USERS } } #user
+        - name: LDAP_PASSWORDS
+          valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_PASSWORDS } } #password
+
+      volumes:
+      - name: openldap-volume
+        hostPath: { path: /opt/state/lan-lab-ldap/openldap }
+      - name: certs-volume
+        hostPath: { path: /opt/state/lan-lab-ldap/certs }
+
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

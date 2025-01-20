@@ -1,0 +1,21 @@
+---
+# Handled by ServiceLB (i.e. Klipper) in K3s
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap-service
+  namespace: lan-lab-ldap-ns
+spec:
+  selector:
+    app: lan-lab-ldap
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - name: ldap-tcp
+    protocol: TCP
+    port: 389
+    targetPort: 389
+  - name: ldaps-tcp
+    protocol: TCP
+    port: 636
+    targetPort: 636

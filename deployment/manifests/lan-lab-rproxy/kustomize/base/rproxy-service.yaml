@@ -1,0 +1,20 @@
+---
+# Handled by ServiceLB (i.e. Klipper) in K3s
+apiVersion: v1
+kind: Service
+metadata:
+  name: rproxy-service
+  namespace: lan-lab-rproxy-ns
+spec:
+  selector:
+    app: lan-lab-rproxy
+  type: LoadBalancer
+  ports:
+  - name: rproxy-http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: rproxy-https
+    protocol: TCP
+    port: 443
+    targetPort: 443

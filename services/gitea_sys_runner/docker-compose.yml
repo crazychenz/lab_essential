@@ -13,7 +13,7 @@ services:
     command:
       - |
         # Fetch and install certificate for init container.
-        wget --no-check-certificate https://tls.lab/certs/root.crt -O /etc/ssl/certs/lab-root.crt
+        wget --no-check-certificate https://tls.lab.lan/certs/root.crt -O /etc/ssl/certs/lab-root.crt
         cat /etc/ssl/certs/lab-root.crt >> /etc/ssl/certs/ca-certificates.crt
         
         # Generate config if non exists.
@@ -44,7 +44,7 @@ services:
         FROM git.lab/dockerhub/act_runner:latest
         RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
         RUN apk add -U --allow-untrusted nodejs ansible docker docker-cli-buildx docker-cli-compose
-        RUN wget --no-check-certificate https://tls.lab/certs/root.crt -O /etc/ssl/certs/lab-root.crt
+        RUN wget --no-check-certificate https://tls.lab.lan/certs/root.crt -O /etc/ssl/certs/lab-root.crt
         RUN cat /etc/ssl/certs/lab-root.crt >> /etc/ssl/certs/ca-certificates.crt
     container_name: gitea_sys_runner
     # Required for docker in docker control.

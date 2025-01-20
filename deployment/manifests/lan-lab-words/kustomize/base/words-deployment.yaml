@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: words-deployment
+  namespace: lan-lab-words-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lan-lab-words
+  template:
+    metadata:
+      labels:
+        app: lan-lab-words
+    spec:
+      # dnsConfig:
+      #   nameservers: [ "9.9.9.9", "1.1.1.1" ]
+      containers:
+      - name: lan-lab-words
+        image: git.lab.lan/lab/vaultwarden:stage
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+      volumes:
+      - name: data-volume
+        hostPath: { path: /opt/state/lan-lab-words/vault }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+

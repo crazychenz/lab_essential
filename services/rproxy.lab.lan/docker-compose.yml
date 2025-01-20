@@ -1,0 +1,80 @@
+services:
+
+  caddy_certs_init:
+    image: git.lab.lan/lab/caddy_certs_init:stage
+    container_name: caddy_certs_init
+    build: 
+      dockerfile_inline: |
+        #FROM git.lab.lan/dockerhub/caddy:alpine
+        FROM caddy:alpine
+        
+        # Execute Caddy's PKI application to create certificates.
+        COPY <<EOF /init-pki.sh
+        #!/bin/sh
+
+        # If certificates are valid, return success.
+        if [ -e /certs/root.key -a -e /certs/root.crt ]; then
+          echo "Found certificates."
+          exit 0
+        fi
+
+        echo "No certificates found, created them now."
+        # Start the server
+        caddy run &
+        TMP_CADDY_PID=\$!
+        # Wait for server to start
+        sleep 1
+        # Tell caddy to gen certs (and install them).
+        caddy trust
+        # Wait for server to create certificates
+        sleep 1
+        # Kill server
+        kill \$\{TMP_CADDY_PID\}
+        # Copy public certs to hosted folder 
+        mkdir -p /certs
+        cp /data/caddy/pki/authorities/local/* /certs/
+        chmod 644 /certs/*.crt
+        # Return success
+        exit 0
+        EOF
+        # Set execute perm, execute, and remove the initialize PKI script.
+        RUN chmod +x /init-pki.sh
+
+        CMD ["/init-pki.sh"]
+    network_mode: host
+    volumes:
+      - /opt/state/lan-lab-rproxy/local-certs:/certs
+
+  caddy_rproxy:
+    image: git.lab.lan/lab/caddy_rproxy:stage
+    depends_on:
+      caddy_certs_init: { condition: service_completed_successfully }
+    container_name: caddy_rproxy
+    build: 
+      context: context
+      dockerfile_inline: |
+        #FROM git.lab.lan/dockerhub/caddy:alpine
+        FROM caddy:alpine
+        
+        #COPY Caddyfile /etc/caddy/Caddyfile
+        
+        # Build the container entrypoint
+        COPY <<EOF /start-caddy.sh
+        #!/bin/sh
+        mkdir -p /public/certs
+        cp /data/caddy/pki/authorities/local/*.crt /public/certs
+        caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+        EOF
+        RUN chmod +x /start-caddy.sh
+        CMD ["/start-caddy.sh"]
+
+    restart: unless-stopped
+    ports: [ "11180:80", "11443:443", "81:81" ]
+
+    extra_hosts:
+    # Backend hostnames used in Caddyfile
+    - dockerhost:host-gateway
+    volumes:
+      - /opt/state/lan-lab-rproxy/config:/config
+      - /opt/state/lan-lab-rproxy/local-certs:/data/caddy/pki/authorities/local
+      - ./Caddyfile:/etc/caddy/Caddyfile

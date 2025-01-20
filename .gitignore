@@ -1,2 +1,3 @@
 collector/essential_pkgs
 collector/essential_pkgs_install.sh
+**/flux

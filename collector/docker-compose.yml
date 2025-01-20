@@ -56,6 +56,7 @@ services:
       apk fetch -R ansible
       apk fetch -R docker docker-cli-buildx docker-cli-compose
       apk fetch -R nodejs
+      apk fetch -R phpldapadmin caddy php82-fpm s6
       apk index --rewrite-arch x86_64 -o APKINDEX.tar.gz *.apk
   
   docker-collector:
@@ -100,57 +101,61 @@ services:
 
       try_pull \
         alpine:latest \
-        git.lab/dockerhub/alpine:latest \
-        git.lab%2Fdockerhub%2Falpine%3Alatest.dockerimage
+        git.lab.lan/dockerhub/alpine:latest \
+        git.lab.lan%2Fdockerhub%2Falpine%3Alatest.dockerimage
       try_pull \
         caddy:alpine \
-        git.lab/dockerhub/caddy:alpine \
-        git.lab%2Fdockerhub%2Fcaddy%3Aalpine.dockerimage
+        git.lab.lan/dockerhub/caddy:alpine \
+        git.lab.lan%2Fdockerhub%2Fcaddy%3Aalpine.dockerimage
       try_pull \
         gitea/gitea:latest \
-        git.lab/dockerhub/gitea:latest \
-        git.lab%2Fdockerhub%2Fgitea%3Alatest.dockerimage
+        git.lab.lan/dockerhub/gitea:latest \
+        git.lab.lan%2Fdockerhub%2Fgitea%3Alatest.dockerimage
       try_pull \
         gitea/act_runner:latest \
-        git.lab/dockerhub/act_runner:latest \
-        git.lab%2Fdockerhub%2Fact_runner%3Alatest.dockerimage
+        git.lab.lan/dockerhub/act_runner:latest \
+        git.lab.lan%2Fdockerhub%2Fact_runner%3Alatest.dockerimage
       try_pull \
         vaultwarden/server:latest \
-        git.lab/dockerhub/vaultwarden:latest \
-        git.lab%2Fdockerhub%2Fvaultwarden%3Alatest.dockerimage
+        git.lab.lan/dockerhub/vaultwarden:latest \
+        git.lab.lan%2Fdockerhub%2Fvaultwarden%3Alatest.dockerimage
       try_pull \
         node:lts-alpine \
-        git.lab/dockerhub/node:lts-alpine \
-        git.lab%2Fdockerhub%2Fnode%3Alts-alpine.dockerimage
+        git.lab.lan/dockerhub/node:lts-alpine \
+        git.lab.lan%2Fdockerhub%2Fnode%3Alts-alpine.dockerimage
       try_pull \
         postgres:14 \
-        git.lab/dockerhub/postgres:14 \
-        git.lab%2Fdockerhub%2Fpostgres%3A14.dockerimage
+        git.lab.lan/dockerhub/postgres:14 \
+        git.lab.lan%2Fdockerhub%2Fpostgres%3A14.dockerimage
+      try_pull \
+        bitnami/openldap:latest \
+        git.lab.lan/dockerhub/bitnami_openldap:latest \
+        git.lab.lan%2Fdockerhub%bitnami_openldap%3Alatest.dockerimage
 
       try_pull \
         ghcr.io/fluxcd/notification-controller:v1.3.0 \
-        git.lab/ghcr.io/fluxcd-notification-controller:v1.3.0 \
-        git.lab%2Fghcr.io%2Ffluxcd-notification-controller%3Av1.3.0.dockerimage
+        git.lab.lan/ghcr.io/fluxcd-notification-controller:v1.3.0 \
+        git.lab.lan%2Fghcr.io%2Ffluxcd-notification-controller%3Av1.3.0.dockerimage
       try_pull \
         ghcr.io/fluxcd/kustomize-controller:v1.3.0 \
-        git.lab/ghcr.io/fluxcd-kustomize-controller:v1.3.0 \
-        git.lab%2Fghcr.io%2Ffluxcd-kustomize-controller%3Av1.3.0.dockerimage
+        git.lab.lan/ghcr.io/fluxcd-kustomize-controller:v1.3.0 \
+        git.lab.lan%2Fghcr.io%2Ffluxcd-kustomize-controller%3Av1.3.0.dockerimage
       try_pull \
         ghcr.io/fluxcd/helm-controller:v1.0.1 \
-        git.lab/ghcr.io/fluxcd-helm-controller:v1.0.1 \
-        git.lab%2Fghcr.io%2Ffluxcd-helm-controller%3Av1.0.1.dockerimage
+        git.lab.lan/ghcr.io/fluxcd-helm-controller:v1.0.1 \
+        git.lab.lan%2Fghcr.io%2Ffluxcd-helm-controller%3Av1.0.1.dockerimage
       try_pull \
         ghcr.io/fluxcd/source-controller:v1.3.0 \
-        git.lab/ghcr.io/fluxcd-source-controller:v1.3.0 \
-        git.lab%2Fghcr.io%2Ffluxcd-source-controller%3Av1.3.0.dockerimage
+        git.lab.lan/ghcr.io/fluxcd-source-controller:v1.3.0 \
+        git.lab.lan%2Fghcr.io%2Ffluxcd-source-controller%3Av1.3.0.dockerimage
       try_pull \
         ghcr.io/fluxcd/image-automation-controller:v0.38.0 \
-        git.lab/ghcr.io/fluxcd-image-automation-controller:v0.38.0 \
-        git.lab%2Fghcr.io%2Ffluxcd-image-automation-controller%3Av0.38.0.dockerimage
+        git.lab.lan/ghcr.io/fluxcd-image-automation-controller:v0.38.0 \
+        git.lab.lan%2Fghcr.io%2Ffluxcd-image-automation-controller%3Av0.38.0.dockerimage
       try_pull \
         ghcr.io/fluxcd/image-reflector-controller:v0.32.0 \
-        git.lab/ghcr.io/fluxcd-image-reflector-controller:v0.32.0 \
-        git.lab%2Fghcr.io%2Ffluxcd-image-reflector-controller%3Av0.32.0.dockerimage
+        git.lab.lan/ghcr.io/fluxcd-image-reflector-controller:v0.32.0 \
+        git.lab.lan%2Fghcr.io%2Ffluxcd-image-reflector-controller%3Av0.32.0.dockerimage
 
       chmod 755 /data/docker/*
       
