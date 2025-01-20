@@ -4,6 +4,7 @@ services:
     image: git.lab.lan/lab/openldap_svc:stage
     container_name: openldap_svc
     build:
+      extra_hosts: [ "dockerhost:host-gateway" ]
       context: context/openldap
       dockerfile_inline: |
         FROM git.lab.lan/dockerhub/bitnami_openldap:latest
@@ -35,11 +36,12 @@ services:
     image: git.lab.lan/lab/phpldapadmin_svc:stage
     container_name: phpldapadmin1_svc
     build:
+      extra_hosts: [ "dockerhost:host-gateway" ]
       context: context/phpldapadmin
       dockerfile_inline: |
         FROM git.lab.lan/dockerhub/alpine:latest
         RUN echo http://dockerhost:8000/alpine > /etc/apk/repositories
-        RUN apk add -U --allow-untrusted --no-cache phpldapadmin caddy php82-fpm s6
+        RUN apk add -U --allow-untrusted phpldapadmin caddy php82-fpm s6
         COPY php.ini /etc/php82/
         COPY init.sh /
         COPY Caddyfile /etc/caddy/

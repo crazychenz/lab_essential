@@ -12,7 +12,7 @@ docker load < ${DOCKER_IMG_DIR}git.lab.lan%2Fdockerhub%2Fact_runner%3Alatest.doc
 docker load < ${DOCKER_IMG_DIR}git.lab.lan%2Fdockerhub%2Fvaultwarden%3Alatest.dockerimage
 docker load < ${DOCKER_IMG_DIR}git.lab.lan%2Fdockerhub%2Fnode%3Alts-alpine.dockerimage
 docker load < ${DOCKER_IMG_DIR}git.lab.lan%2Fdockerhub%2Fpostgres%3A14.dockerimage
-docker load < ${DOCKER_IMG_TAG}git.lab.lan%2Fdockerhub%bitnami_openldap%3Alatest.dockerimage
+docker load < ${DOCKER_IMG_DIR}git.lab.lan%2Fdockerhub%2Fbitnami_openldap%3Alatest.dockerimage
 
 # Build baseline docker images.
 docker compose up -d essential_pkgs_svc
