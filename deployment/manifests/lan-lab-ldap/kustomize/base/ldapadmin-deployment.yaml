@@ -5,7 +5,7 @@ metadata:
   name: ldapadmin-deployment
   namespace: lan-lab-ldap-ns
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: lan-lab-ldapadmin
@@ -26,7 +26,7 @@ spec:
         #   searches: [ "lab.lan" ]
         env:
         - { name: LDAP_NAME, value: "Lab LDAP" }
-        - { name: LDAP_HOST, value: "ldap.lab.lan" }
+        - { name: LDAP_HOST, value: "ldap-service" }
         - { name: LDAP_BASE, value: "dc=lab,dc=lan" }
         - { name: LDAP_PORT, value: "389" }
 

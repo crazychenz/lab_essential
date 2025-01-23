@@ -29,7 +29,7 @@ spec:
         - name: localtime-volume
           mountPath: /etc/localtime
         env:
-        - { name: FULL_HOSTNAME, value: git.lab }
+        - { name: FULL_HOSTNAME, value: git.lab.lan }
         - { name: USER_UID, value: "1000" }
         - { name: USER_GID, value: "1000" }
         - { name: GITEA__database__DB_TYPE, value: postgres }
@@ -57,3 +57,6 @@ spec:
       maxUnavailable: 1
 
 
+# Note: Gitea doesn't create users on login, instead it synchronizes user
+# data periodically (once every 24h by default). This can be manually kicked
+# off from admin panel.

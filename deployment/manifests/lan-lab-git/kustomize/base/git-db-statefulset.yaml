@@ -15,7 +15,7 @@ spec:
         app: lan-lab-git-db
     spec:
       containers:
-      - name: gitea_db
+      - name: gitea-db
         image: git.lab.lan/lab/gitea_db:stage
         env:
         - name: POSTGRES_DB

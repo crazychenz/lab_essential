@@ -5,7 +5,7 @@ metadata:
   name: ldap-deployment
   namespace: lan-lab-ldap-ns
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: lan-lab-ldap
@@ -21,7 +21,9 @@ spec:
       - name: lan-lab-ldap
         image: git.lab.lan/lab/openldap_svc:stage
         imagePullPolicy: IfNotPresent
-        command: ["/init.sh"]
+        command:
+        - "/opt/bitnami/scripts/openldap/entrypoint.sh"
+        - "/opt/bitnami/scripts/openldap/run.sh"
         volumeMounts:
         - name: openldap-volume
           mountPath: /bitnami/openldap
@@ -57,3 +59,9 @@ spec:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
+
+
+# Before initialized, the pods will error out and you'll see in the logs:
+# ```text
+# mkdir: cannot create directory '/bitnami/openldap/data': Permission denied
+# ```
