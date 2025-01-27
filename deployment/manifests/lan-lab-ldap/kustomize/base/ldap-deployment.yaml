@@ -33,6 +33,12 @@ spec:
         - { name: LDAP_PORT_NUMBER, value: "389" }
         - { name: LDAP_ROOT, value: "dc=lab,dc=lan" }
         - { name: LDAP_CONFIG_ADMIN_ENABLED, value: "yes" }
+        - { name: LDAP_ENABLE_TLS, value: "yes" }
+        - { name: LDAP_LDAPS_PORT_NUMBER, value: "636" }
+        - { name: LDAP_TLS_CERT_FILE, value: "/opt/bitnami/openldap/certs/ldapserver.crt" }
+        - { name: LDAP_TLS_KEY_FILE, value: "/opt/bitnami/openldap/certs/ldapserver.key" }
+        - { name: LDAP_TLS_CA_FILE, value: "/opt/bitnami/openldap/certs/ldapserver.crt" }
+        #- { name: LDAP_TLS_DH_PARAMS_FILE, value: "" }
 
         - name: LDAP_ADMIN_USERNAME
           valueFrom: { secretKeyRef: { name: ldap-secrets, key: LDAP_ADMIN_USERNAME } } #admin
