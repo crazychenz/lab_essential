@@ -1,0 +1,21 @@
+[sssd]
+services = nss, pam
+config_file_version = 2
+domains = LDAP
+
+[domain/LDAP]
+id_provider = ldap
+auth_provider = ldap
+ldap_uri = ldap://ldap.lab.lan
+ldap_search_base = dc=lab,dc=lan
+ldap_tls_reqcert = never
+
+# Home directories and caching
+fallback_homedir = /home/users/%u
+ldap_id_use_start_tls = false
+cache_credentials = true
+
+# Access Control (optional)
+#access_provider = simple
+#simple_allow_groups = ldap_users
+

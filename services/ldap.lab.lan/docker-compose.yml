@@ -7,11 +7,12 @@ services:
       extra_hosts: [ "dockerhost:host-gateway" ]
       context: context/openldap
       dockerfile_inline: |
-        FROM git.lab.lan/dockerhub/bitnami_openldap:latest
+        #FROM git.lab.lan/dockerhub/bitnami_openldap:latest
+        FROM bitnami/openldap
     hostname: ldap.lab.lan
     extra_hosts:
     - dockerhost:host-gateway
-    - ldap.lab.lan:192.168.1.6 
+    - ldap.lab.lan:host-gateway
     restart: unless-stopped
     ports:
     - 389:389
@@ -26,11 +27,52 @@ services:
     # cn=config,cn=config
     - LDAP_CONFIG_ADMIN_USERNAME=config
     - LDAP_CONFIG_ADMIN_PASSWORD=password
-    - LDAP_USERS=user
+    - LDAP_USERS=testuser
     - LDAP_PASSWORDS=password
+    - LDAP_ENABLE_TLS=yes
+    - LDAP_LDAPS_PORT_NUMBER=636
+    - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/ldap-cert.pem
+    - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/ldap-key.pem
+    - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/ldap-cert.pem
     volumes:
     - ./data/openldap:/bitnami/openldap
     - ./data/certs:/opt/bitnami/openldap/certs
+
+  client:
+    image: client
+    container_name: client
+    build:
+      extra_hosts: [ "dockerhost:host-gateway" ]
+      context: context/openldap
+      dockerfile_inline: |
+        FROM debian:bookworm
+        RUN apt-get update
+        RUN apt-get install -y sssd libpam-sss libnss-sss oddjob oddjob-mkhomedir ldap-utils sssd-tools libsss-sudo autofs
+        RUN apt-get install -y vim iputils-ping nmap net-tools openssh-server rsyslog
+        RUN sed -i 's/#Port 22/Port 40022/' /etc/ssh/sshd_config
+        RUN mkdir /run/sshd
+        RUN useradd -p password ladmin
+        COPY sssd.conf /etc/sssd/sssd.conf
+        RUN chmod 600 /etc/sssd/sssd.conf
+        COPY ldap-cert.pem /usr/local/share/ca-certificates/
+        RUN chmod 644 /usr/local/share/ca-certificates/ldap-cert.pem && update-ca-certificates
+        COPY ldap.conf /etc/ldap/ldap.conf
+        RUN chmod 644 /etc/ldap/ldap.conf
+        COPY pamd-sssd-config /etc/pam.d/sssd-config
+        COPY entrypoint.sh /entrypoint.sh
+        EXPOSE 40022
+        USER ladmin
+
+    entrypoint: /entrypoint.sh
+    extra_hosts:
+      - dockerhost:host-gateway
+      - ldap.lab.lan:host-gateway
+    ports:
+    - 40022:40022
+    restart: never
+    stdin_open: true
+    tty: true
+
 
   phpldapadmin_svc:
     image: git.lab.lan/lab/phpldapadmin_svc:stage
@@ -54,7 +96,7 @@ services:
         ENTRYPOINT ["/init.sh"]
     extra_hosts:
     - dockerhost:host-gateway
-    - ldap.lab.lan:192.168.1.6
+    - ldap.lab.lan:host-gateway
     restart: unless-stopped
     ports:
     - 1380:80

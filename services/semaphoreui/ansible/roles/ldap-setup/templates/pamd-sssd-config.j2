@@ -1,0 +1,19 @@
+# Authentication
+auth    required        pam_env.so
+auth    sufficient      pam_sss.so
+auth    required        pam_unix.so nullok_secure
+
+# Password management
+password sufficient     pam_sss.so
+password required       pam_unix.so
+
+# Session management
+session required        pam_mkhomedir.so skel=/etc/skel umask=0077
+session optional        pam_sss.so
+
+# Account management
+account sufficient      pam_sss.so
+account required        pam_unix.so
+
+
+

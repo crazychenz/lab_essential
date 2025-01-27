@@ -1,0 +1,9 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for roles/ldap-setup
+---
+- name: restart nslcd
+  ansible.builtin.service:
+    name: nslcd
+    state: restarted
+
