@@ -57,6 +57,7 @@ services:
       apk fetch -R docker docker-cli-buildx docker-cli-compose
       apk fetch -R nodejs
       apk fetch -R phpldapadmin caddy php82-fpm s6
+      apk fetch -R openssl bash
       apk index --rewrite-arch x86_64 -o APKINDEX.tar.gz *.apk
   
   docker-collector:

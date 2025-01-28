@@ -1,0 +1,28 @@
+dn: dc=lab,dc=lan
+objectClass: dcObject
+objectClass: organization
+dc: lab
+o: lab
+
+dn: ou=users,dc=lab,dc=lan
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=lab,dc=lan
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=testuser,ou=users,dc=lab,dc=lan
+cn: User1
+cn: testuser
+sn: Bar1
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+# password is password
+userPassword:: cGFzc3dvcmQ=
+uid: testuser
+uidNumber: 10000
+gidNumber: 10000
+loginShell: /bin/bash
+homeDirectory: /home/users/testuser

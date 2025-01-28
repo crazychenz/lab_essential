@@ -1,0 +1,1 @@
+/home/users/& -fstype=nfs4,rw,soft,intr dockerhost:/export/users/&

@@ -1,4 +1,23 @@
 services:
+  cert_generator:
+    image: cert_generator
+    container_name: cert_generator
+    restart: never
+    build:
+      extra_hosts: [ "dockerhost:host-gateway" ]
+      context: context/cert_generator
+      dockerfile_inline: |
+        FROM alpine:latest
+        RUN apk add -U openssl bash
+        WORKDIR /certs
+        COPY generate.sh /generate.sh
+        RUN chmod +x /generate.sh
+    volumes:
+      - ./data/certs:/certs
+    command: [ "/generate.sh" ]
+
+
+
   openldap_svc:
     # https://hub.docker.com/r/bitnami/openldap
     image: git.lab.lan/lab/openldap_svc:stage
@@ -9,6 +28,11 @@ services:
       dockerfile_inline: |
         #FROM git.lab.lan/dockerhub/bitnami_openldap:latest
         FROM bitnami/openldap
+        #COPY baseline-dir.ldif /ldif/baseline-dir.ldif
+        #RUN chmod 644 /ldif/baseline-dir.ldif
+        #COPY setup-acls.sh /docker-entrypoint-initdb.d/setup-acls.sh
+        #RUN chmod +x /docker-entrypoint-initdb.d/setup-acls.sh
+        #COPY acls.ldif /config-ldif/acls.ldif
     hostname: ldap.lab.lan
     extra_hosts:
     - dockerhost:host-gateway
@@ -31,39 +55,62 @@ services:
     - LDAP_PASSWORDS=password
     - LDAP_ENABLE_TLS=yes
     - LDAP_LDAPS_PORT_NUMBER=636
-    - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/ldap-cert.pem
-    - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/ldap-key.pem
-    - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/ldap-cert.pem
+    - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/lab-apps.chain.crt
+    - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/lab-apps.key
+    - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/lab-root.chain.crt
     volumes:
     - ./data/openldap:/bitnami/openldap
     - ./data/certs:/opt/bitnami/openldap/certs
+    - ./imports:/ldifs:ro
+    - ./imports:/docker-entrypoint-initdb.d:ro
 
   client:
     image: client
     container_name: client
     build:
       extra_hosts: [ "dockerhost:host-gateway" ]
-      context: context/openldap
+      context: context
       dockerfile_inline: |
         FROM debian:bookworm
+
+        # Install all the things
         RUN apt-get update
-        RUN apt-get install -y sssd libpam-sss libnss-sss oddjob oddjob-mkhomedir ldap-utils sssd-tools libsss-sudo autofs
+        RUN apt-get install -y sssd libpam-sss libnss-sss oddjob oddjob-mkhomedir ldap-utils sssd-tools libsss-sudo
+        # Note: No trivial setup for NFS from container
+        #RUN apt-get install autofs nfs-common
         RUN apt-get install -y vim iputils-ping nmap net-tools openssh-server rsyslog
+
+        # Configure sshd and non-LDAP user
         RUN sed -i 's/#Port 22/Port 40022/' /etc/ssh/sshd_config
         RUN mkdir /run/sshd
-        RUN useradd -p password ladmin
-        COPY sssd.conf /etc/sssd/sssd.conf
+        RUN useradd -p password -u 900 ladmin
+
+        # Setup sss
+        COPY client/sssd.conf /etc/sssd/sssd.conf
         RUN chmod 600 /etc/sssd/sssd.conf
-        COPY ldap-cert.pem /usr/local/share/ca-certificates/
-        RUN chmod 644 /usr/local/share/ca-certificates/ldap-cert.pem && update-ca-certificates
-        COPY ldap.conf /etc/ldap/ldap.conf
+
+        # Setup CA certificate
+        #COPY openldap/lan-lab.cert.pem /usr/local/share/ca-certificates/
+        #RUN chmod 644 /usr/local/share/ca-certificates/ldap-cert.pem && update-ca-certificates
+        COPY client/ldap.conf /etc/ldap/ldap.conf
         RUN chmod 644 /etc/ldap/ldap.conf
-        COPY pamd-sssd-config /etc/pam.d/sssd-config
-        COPY entrypoint.sh /entrypoint.sh
+
+        # Setup PAM
+        #COPY pamd-sssd-config /etc/pam.d/sssd-config
+        ENV DEBIAN_FRONTEND=noninteractive
+        RUN pam-auth-update --enable sss && pam-auth-update --enable mkhomedir
+
+        # Setup NFS
+        # Note: No trivial setup for NFS from container
+        #COPY client/users.conf /etc/auto.master.d/
+        #COPY client/auto.users /etc/auto.users
+
+        # Start services
+        COPY client/entrypoint.sh /entrypoint.sh
         EXPOSE 40022
         USER ladmin
 
-    entrypoint: /entrypoint.sh
+    entrypoint: [ "/entrypoint.sh" ]
     extra_hosts:
       - dockerhost:host-gateway
       - ldap.lab.lan:host-gateway
@@ -72,6 +119,8 @@ services:
     restart: never
     stdin_open: true
     tty: true
+    volumes:
+    - ./data/certs:/certs
 
 
   phpldapadmin_svc:
