@@ -1,0 +1,31 @@
+[sssd]
+services = nss, pam
+config_file_version = 2
+domains = default
+
+[domain/default]
+id_provider = ldap
+auth_provider = ldap
+chpass_provider = ldap
+ldap_uri = ldap://ldap.lab.lan
+ldap_search_base = dc=lab,dc=lan
+ldap_id_use_start_tls = True
+ldap_default_bind_dn = cn=admin,dc=lab,dc=lan
+ldap_default_authtok = password
+ldap_tls_reqcert = never
+ldap_tls_cacert = /usr/local/share/ca-certificates/lab-root.crt
+ldap_tls_cacertdir = /usr/local/share/ca-certificates/
+ldap_search_timeout = 50
+ldap_network_timeout = 60
+#access_provider = simple
+#ldap_access_filter =
+
+# Home directories and caching
+fallback_homedir = /home/users/%u
+shell_fallback = /bin/bash
+default_shell = /bin/bash
+cache_credentials = true
+
+# Access Control (optional)
+#access_provider = simple
+#simple_allow_groups = ldap_users

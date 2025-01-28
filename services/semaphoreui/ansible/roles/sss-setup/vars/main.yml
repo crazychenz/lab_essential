@@ -1,0 +1,11 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for roles/ldap-setup
+
+# TODO: Use these.
+ldap_server: "ldap://server.lab.lan"
+ldap_base_dn: "dc=lab,dc=lan"
+ldap_bind_dn: "cn=admin,dc=lab,dc=lan"
+ldap_bind_password: "password"
+ldap_tls: false
+
