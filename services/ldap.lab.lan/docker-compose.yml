@@ -39,10 +39,10 @@ services:
     - ldap.lab.lan:host-gateway
     restart: unless-stopped
     ports:
-    - 389:389
-    - 636:636
+    - 389:1389
+    - 636:1636
     environment:
-    - LDAP_PORT_NUMBER=389
+    - LDAP_PORT_NUMBER=1389
     - LDAP_ROOT=dc=lab,dc=lan
     # cn=admin,dc=lab,dc=lan
     - LDAP_ADMIN_USERNAME=admin
@@ -51,13 +51,13 @@ services:
     # cn=config,cn=config
     - LDAP_CONFIG_ADMIN_USERNAME=config
     - LDAP_CONFIG_ADMIN_PASSWORD=password
-    - LDAP_USERS=testuser
-    - LDAP_PASSWORDS=password
+      #- LDAP_USERS=testuser
+      #- LDAP_PASSWORDS=password
     - LDAP_ENABLE_TLS=yes
-    - LDAP_LDAPS_PORT_NUMBER=636
-    - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/lab-apps.chain.crt
-    - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/lab-apps.key
-    - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/lab-root.chain.crt
+    - LDAP_LDAPS_PORT_NUMBER=1636
+    - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/lab.lan.crt
+    - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/lab.lan.key
+    - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/lab-root.crt
     volumes:
     - ./data/openldap:/bitnami/openldap
     - ./data/certs:/opt/bitnami/openldap/certs
