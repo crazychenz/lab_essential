@@ -322,7 +322,15 @@ $servers->setValue('server','base',array(env('LDAP_BASE', 'dc=example,dc=org')))
 $servers->setValue('login','auth_type','cookie');
 $servers->setValue('login','bind_id',env('LDAP_BIND_DN', 'cd=admin,dc=example,dc=org'));
 $servers->setValue('login','bind_pass',env('LDAP_BIND_PW', 'password'));
-$servers->setValue('server','tls',false);
+
+$servers->setValue('server','tls',end('LDAP_ENABLE_TLS', false));
+$servers->setValue('server','tls_cacert',env('LDAP_TLS_CACERT', null));
+$servers->setValue('server','tls_cacertdir',env('LDAP_TLS_CACERTDIR', null));
+// $servers->setValue('server','tls_cert',env('LDAP_TLS_CLIENT_CERT', null));
+// $servers->setValue('server','tls_key',env('LDAP_TLS_CLIENT_KEY', null));
+
+
+
 
 /* $servers->NewServer('ldap_pla') must be called before each new LDAP server
    declaration. */
