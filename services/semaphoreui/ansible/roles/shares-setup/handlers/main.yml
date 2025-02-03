@@ -1,3 +1,11 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # handlers file for setup-autofs
+
+
+# handlers file for roles/ldap-setup
+- name: restart autofs
+  ansible.builtin.service:
+    name: autofs
+    state: restarted
+

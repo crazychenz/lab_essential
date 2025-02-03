@@ -1,10 +1,29 @@
 ##SPDX-License-Identifier: MIT-0
 ---
 
-- name: Ensure NFS mount is present in /etc/fstab
-  ansible.builtin.lineinfile:
-    path: /etc/fstab
-    line: "nfs.lab.lan:/exports/users /home/users nfs4 rw,soft,intr 0 0"
-    state: present
-    create: yes
-    backup: yes
+# autofs is better than fstab for offline booting.
+#- name: Ensure NFS mount is present in /etc/fstab
+#  ansible.builtin.lineinfile:
+#    path: /etc/fstab
+#    line: "nfs.lab.lan:/exports/users /home/users nfs4 rw,soft,intr 0 0"
+#    state: present
+#    create: yes
+#    backup: yes
+
+- name: Configure /etc/auto.users
+  ansible.builtin.template:
+    src: auto.users.j2
+    dest: /etc/auto.users
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure /etc/auto.master.d
+  ansible.builtin.template:
+    src: users.autofs.j2
+    dest: /etc/auto.master.d/users.autofs
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart autofs
+
