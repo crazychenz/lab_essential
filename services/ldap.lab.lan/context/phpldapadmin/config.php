@@ -323,7 +323,7 @@ $servers->setValue('login','auth_type','cookie');
 $servers->setValue('login','bind_id',env('LDAP_BIND_DN', 'cd=admin,dc=example,dc=org'));
 $servers->setValue('login','bind_pass',env('LDAP_BIND_PW', 'password'));
 
-$servers->setValue('server','tls',end('LDAP_ENABLE_TLS', false));
+$servers->setValue('server','tls',env('LDAP_ENABLE_TLS', false));
 $servers->setValue('server','tls_cacert',env('LDAP_TLS_CACERT', null));
 $servers->setValue('server','tls_cacertdir',env('LDAP_TLS_CACERTDIR', null));
 // $servers->setValue('server','tls_cert',env('LDAP_TLS_CLIENT_CERT', null));
